@@ -1,3 +1,18 @@
+# Dependencias
 node_modules/
+
+# Base de datos local
 *.db
+
+# Variables de entorno (claves, contraseñas)
 .env*
+
+# Build de producción
+dist/
+
+# Logs
+*.log
+
+# Archivos del sistema operativo
+Thumbs.db
+.DS_Store
