@@ -36,6 +36,7 @@ function esFechaValida(texto) {
 
 // Suma las bases de cada tipo de IVA y calcula el IVA una sola vez por tipo,
 // redondeando al céntimo más cercano. Todo son enteros: nunca usamos euros con decimales.
+// Devuelve también el desglose por tipo de IVA, para poder mostrarlo en la factura.
 function calcularTotales(lineas) {
   const basePorTipo = new Map();
   for (const linea of lineas) {
@@ -45,12 +46,16 @@ function calcularTotales(lineas) {
 
   let base = 0;
   let iva = 0;
+  const ivaPorTipo = [];
   for (const [porcentaje, baseTipo] of basePorTipo) {
+    const ivaTipo = Math.round((baseTipo * porcentaje) / 100);
     base += baseTipo;
-    iva += Math.round((baseTipo * porcentaje) / 100);
+    iva += ivaTipo;
+    ivaPorTipo.push({ iva_porcentaje: porcentaje, base_centimos: baseTipo, iva_centimos: ivaTipo });
   }
+  ivaPorTipo.sort((a, b) => a.iva_porcentaje - b.iva_porcentaje);
 
-  return { base, iva, total: base + iva };
+  return { base, iva, total: base + iva, ivaPorTipo };
 }
 
 function siguienteNumero(anio) {
@@ -75,7 +80,17 @@ router.get('/:id', (req, res) => {
   }
 
   const { cliente_id, ...resto } = factura;
-  res.json({ ...resto, cliente: buscarCliente.get(cliente_id), lineas: listarLineas.all(id) });
+  const lineas = listarLineas.all(id);
+  // El desglose sale de las líneas guardadas (con el precio y el IVA de cuando se emitió),
+  // con el mismo cálculo que al crearla, así que cuadra con los totales guardados
+  const { ivaPorTipo } = calcularTotales(lineas);
+
+  res.json({
+    ...resto,
+    cliente: buscarCliente.get(cliente_id),
+    lineas: lineas.map((linea) => ({ ...linea, importe_centimos: linea.precio_centimos * linea.cantidad })),
+    iva_por_tipo: ivaPorTipo,
+  });
 });
 
 router.post('/', (req, res) => {

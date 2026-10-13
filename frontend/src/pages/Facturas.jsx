@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { crearFactura, listarClientes, listarFacturas, listarProductos } from '../api.js'
 import { centimosAEuros } from '../utils/dinero.js'
+import { formatearFecha } from '../utils/fechas.js'
 
 // Fecha de hoy como 'AAAA-MM-DD' en la hora local.
 // No usamos toISOString() porque va en hora UTC y de madrugada daría el día anterior.
@@ -9,12 +11,6 @@ function hoy() {
   const mes = String(ahora.getMonth() + 1).padStart(2, '0')
   const dia = String(ahora.getDate()).padStart(2, '0')
   return `${ahora.getFullYear()}-${mes}-${dia}`
-}
-
-// '2026-10-13' -> '13/10/2026'
-function formatearFecha(texto) {
-  const [anio, mes, dia] = texto.split('-')
-  return `${dia}/${mes}/${anio}`
 }
 
 // La cantidad se guarda como texto (lo que hay escrito en el input).
@@ -50,6 +46,8 @@ function calcularVistaPrevia(lineas, productos) {
 }
 
 function Facturas() {
+  // Sirve para cambiar de página desde el código (al pinchar en una fila)
+  const navigate = useNavigate()
   const [facturas, setFacturas] = useState([])
   const [clientes, setClientes] = useState([])
   const [productos, setProductos] = useState([])
@@ -293,7 +291,15 @@ function Facturas() {
             </thead>
             <tbody>
               {facturas.map((factura) => (
-                <tr key={factura.id}>
+                // Toda la fila lleva al detalle. tabIndex y onKeyDown permiten abrirla también
+                // con el teclado (tabulador + Intro), no solo con el ratón
+                <tr
+                  key={factura.id}
+                  className="fila-enlace"
+                  onClick={() => navigate(`/facturas/${factura.id}`)}
+                  onKeyDown={(e) => e.key === 'Enter' && navigate(`/facturas/${factura.id}`)}
+                  tabIndex={0}
+                >
                   <td>{formatearFecha(factura.fecha)}</td>
                   <td>{factura.cliente_nombre}</td>
                   <td>{factura.cliente_dni ?? '—'}</td>
