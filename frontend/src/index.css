@@ -112,3 +112,100 @@ a {
   font-weight: 700;
   margin-bottom: 24px;
 }
+
+.texto-suave {
+  color: var(--color-texto-suave);
+}
+
+/* ===== Mensajes de error ===== */
+.mensaje-error {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border: 1px solid #f5c2c2;
+  border-radius: var(--radio);
+  background: #fdecec;
+  color: #b91c1c;
+}
+
+/* ===== Formularios ===== */
+.formulario {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-texto-suave);
+}
+
+.campo input,
+.campo select {
+  min-width: 160px;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--color-texto);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+.campo input:focus,
+.campo select:focus {
+  outline: 2px solid var(--color-acento);
+  outline-offset: -1px;
+}
+
+.boton {
+  padding: 9px 16px;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-acento);
+  border: none;
+  border-radius: var(--radio);
+  cursor: pointer;
+}
+
+.boton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ===== Tablas ===== */
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+.tabla th,
+.tabla td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.tabla th {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-texto-suave);
+}
+
+/* Las cantidades se alinean a la derecha para que las cifras cuadren */
+.tabla .numero {
+  text-align: right;
+}
