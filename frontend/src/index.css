@@ -268,3 +268,97 @@ a {
 .vista-previa__total {
   font-weight: 700;
 }
+
+/* ===== Listado de facturas: filas que se pueden pinchar ===== */
+.fila-enlace {
+  cursor: pointer;
+}
+
+.fila-enlace:hover,
+.fila-enlace:focus-visible {
+  background: var(--color-acento-suave);
+  outline: none;
+}
+
+/* ===== Detalle de factura ===== */
+/* Los enlaces con aspecto de botón (como "Volver a facturas") */
+a.boton {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.barra-acciones {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.factura {
+  padding: 32px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+.factura__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.factura__cabecera p {
+  margin: 0;
+}
+
+.factura__cliente {
+  min-width: 220px;
+}
+
+.factura__cliente .subtitulo {
+  margin: 0 0 4px;
+}
+
+.factura__totales {
+  margin-top: 16px;
+}
+
+/* Cada pareja nombre/importe va en un div; "contents" hace que la rejilla
+   de .vista-previa coloque el dt y el dd como si el div no existiera */
+.factura__fila-total {
+  display: contents;
+}
+
+/* ===== Al imprimir ===== */
+@media print {
+  /* Fuera el menú lateral y los botones */
+  .menu-lateral,
+  .no-imprimir {
+    display: none !important;
+  }
+
+  /* Sin menú, el contenido ocupa toda la hoja */
+  .contenido {
+    margin-left: 0;
+    padding: 0;
+    max-width: none;
+    min-height: 0;
+  }
+
+  body,
+  :root {
+    background: #fff;
+  }
+
+  /* En papel sobran el marco y el fondo de la tarjeta */
+  .factura {
+    padding: 0;
+    border: none;
+  }
+
+  /* Evita que una línea de la tabla se parta entre dos páginas */
+  .tabla tr {
+    break-inside: avoid;
+  }
+}
