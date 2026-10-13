@@ -209,3 +209,62 @@ a {
 .tabla .numero {
   text-align: right;
 }
+
+/* ===== Formulario de factura ===== */
+/* Variante del formulario con los bloques uno debajo de otro */
+.formulario--columna {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Varios campos y botones en la misma fila */
+.fila-campos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.subtitulo {
+  margin: 8px 0 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.campo .campo__cantidad {
+  min-width: 0;
+  width: 90px;
+}
+
+/* Botón con menos peso visual: Añadir línea, Quitar, Cancelar */
+.boton--secundario {
+  color: var(--color-acento);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+}
+
+.boton--separado {
+  margin-bottom: 24px;
+}
+
+/* Base, IVA y total de la vista previa, alineados a la derecha */
+.vista-previa {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: end;
+  gap: 4px 24px;
+  margin: 8px 0 0;
+}
+
+.vista-previa dt {
+  color: var(--color-texto-suave);
+}
+
+.vista-previa dd {
+  margin: 0;
+  text-align: right;
+}
+
+.vista-previa__total {
+  font-weight: 700;
+}
