@@ -330,6 +330,22 @@ a.boton {
   display: contents;
 }
 
+/* Total en otras divisas: separado de los totales y alineado a la derecha como ellos */
+.factura__divisas {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-borde);
+  text-align: right;
+}
+
+.factura__divisas p {
+  margin: 4px 0 0;
+}
+
+.factura__divisas-fecha {
+  font-size: 13px;
+}
+
 /* ===== Al imprimir ===== */
 @media print {
   /* Fuera el menú lateral y los botones */
