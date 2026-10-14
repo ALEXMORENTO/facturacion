@@ -38,22 +38,45 @@ Debe salir algo que empiece por `v24`.
 
 ## Instalación
 
-Descarga el proyecto e instala las dependencias del backend y del frontend (cada uno tiene las suyas):
+Descarga el proyecto e instala las dependencias. Hay tres grupos: las de la raíz (la herramienta que arranca todo a la vez), las del backend y las del frontend. Un solo comando instala las tres:
 
 ```bash
 git clone https://github.com/ALEXMORENTO/facturacion.git
 cd facturacion
-
-cd backend
-npm install
-
-cd ../frontend
-npm install
+npm run instalar
 ```
+
+> Si usas `Facturin.bat` (ver abajo), no hace falta este paso: la primera vez instala solo lo que falte.
 
 ## Cómo arrancarlo
 
-El programa son dos partes que funcionan a la vez, así que necesitas **dos terminales abiertas**.
+El programa son dos partes que funcionan a la vez: el backend (el servidor) y el frontend (las pantallas). Hay dos formas fáciles de encender las dos de golpe.
+
+### Forma 1 — Doble clic en `Facturin.bat` (Windows)
+
+En la carpeta del proyecto, haz **doble clic en `Facturin.bat`**. Se abre una ventana negra que:
+
+1. Comprueba que tienes Node.js instalado.
+2. La primera vez, instala las dependencias que falten (tarda un poco).
+3. Enciende el backend y el frontend, y abre el navegador solo en `http://localhost:5173`.
+
+Para pararlo, **cierra esa ventana** (o pulsa `Ctrl + C` dentro de ella).
+
+### Forma 2 — Un solo comando en la terminal
+
+Desde la carpeta raíz del proyecto (`facturacion/`):
+
+```bash
+npm run dev
+```
+
+Esto usa [`concurrently`](https://www.npmjs.com/package/concurrently), una herramienta que ejecuta varios comandos a la vez en la misma terminal. Verás los mensajes de las dos partes mezclados, cada uno con su etiqueta de color: `[backend]` en azul y `[frontend]` en verde. El navegador se abre solo.
+
+Para pararlo, pulsa `Ctrl + C` (se paran las dos partes).
+
+### Forma manual — Dos terminales (opcional)
+
+Si prefieres ver cada parte por separado, también puedes arrancarlas a mano en **dos terminales**.
 
 **Terminal 1 — backend:**
 
@@ -104,6 +127,8 @@ facturacion/
 │
 ├── docs/
 │   └── esquema.md            Diseño del proyecto: datos, pantallas, casos raros
+├── package.json              Scripts de la raíz: "npm run dev" arranca todo
+├── Facturin.bat              Arranque con doble clic en Windows
 ├── CLAUDE.md                 Reglas del proyecto
 └── README.md                 Este archivo
 ```

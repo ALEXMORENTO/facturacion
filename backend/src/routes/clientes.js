@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import db from '../db.js';
+import { normalizarDocumento, validarDniNif, validarEmail } from '../utils/validaciones.js';
 
 const router = Router();
 
@@ -35,10 +36,21 @@ router.post('/', (req, res) => {
 
   const cliente = {
     nombre: nombre.trim(),
-    dni: limpiar(dni),
+    // El DNI se guarda siempre igual escrito (sin espacios ni guiones y en mayúsculas)
+    dni: limpiar(dni) ? normalizarDocumento(dni) || null : null,
     email: limpiar(email),
     direccion: limpiar(direccion),
   };
+
+  // DNI y email siguen siendo opcionales, pero si vienen tienen que ser válidos
+  if (cliente.dni) {
+    const error = validarDniNif(cliente.dni);
+    if (error) return res.status(400).json({ error });
+  }
+  if (cliente.email) {
+    const error = validarEmail(cliente.email);
+    if (error) return res.status(400).json({ error });
+  }
 
   const resultado = insertarCliente.run(
     cliente.nombre,
