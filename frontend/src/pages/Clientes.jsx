@@ -54,13 +54,14 @@ function Clientes() {
 
       {error && <p className="mensaje-error">{error}</p>}
 
-      <form className="formulario" onSubmit={guardar}>
+      {/* noValidate: sin los avisos propios del navegador, para que el error del backend salga en rojo */}
+      <form className="formulario" onSubmit={guardar} noValidate>
         <label className="campo">
           Nombre *
           <input name="nombre" value={formulario.nombre} onChange={cambiarCampo} required />
         </label>
         <label className="campo">
-          DNI
+          DNI / NIE / CIF
           <input name="dni" value={formulario.dni} onChange={cambiarCampo} />
         </label>
         <label className="campo">
