@@ -13,6 +13,16 @@ export function centimosAEuros(centimos) {
   return formatoEuros.format(centimos / 100)
 }
 
+// (1250, 'USD') -> "12,50 US$"
+export function centimosADivisa(centimos, divisa) {
+  const formato = new Intl.NumberFormat('es-ES', {
+    style: 'currency',
+    currency: divisa,
+    useGrouping: 'always',
+  })
+  return formato.format(centimos / 100)
+}
+
 // "12,50 €" -> 1250
 // Acepta "12,50", "12,5", "12", "1.234,56", "12.50" y con o sin "€".
 // Devuelve null si el texto no es una cantidad válida.

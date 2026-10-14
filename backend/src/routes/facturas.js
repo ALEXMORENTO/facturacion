@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import db from '../db.js';
+import { validarFechaPosterior } from '../utils/validaciones.js';
 
 const router = Router();
 
@@ -18,6 +19,8 @@ const listarLineas = db.prepare('SELECT * FROM lineas_factura WHERE factura_id =
 const ultimoNumeroDelAnio = db.prepare(
   'SELECT numero FROM facturas WHERE numero LIKE ? ORDER BY numero DESC LIMIT 1'
 );
+// Fecha más reciente de todas las facturas (null si todavía no hay ninguna)
+const fechaUltimaFactura = db.prepare('SELECT MAX(fecha) AS fecha FROM facturas');
 const insertarFactura = db.prepare(`
   INSERT INTO facturas (numero, fecha, cliente_id, base_centimos, iva_centimos, total_centimos, estado)
   VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -105,6 +108,11 @@ router.post('/', (req, res) => {
 
   if (!esFechaValida(fecha)) {
     return res.status(400).json({ error: 'La fecha debe tener el formato AAAA-MM-DD y ser un día real' });
+  }
+
+  const errorFecha = validarFechaPosterior(fecha, fechaUltimaFactura.get().fecha);
+  if (errorFecha) {
+    return res.status(400).json({ error: errorFecha });
   }
 
   if (!Array.isArray(lineas) || lineas.length === 0) {

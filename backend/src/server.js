@@ -3,6 +3,7 @@ import './db.js';
 import clientesRouter from './routes/clientes.js';
 import productosRouter from './routes/productos.js';
 import facturasRouter from './routes/facturas.js';
+import divisasRouter from './routes/divisas.js';
 
 const app = express();
 const PORT = 3001;
@@ -17,6 +18,7 @@ app.get('/api/salud', (req, res) => {
 app.use('/api/clientes', clientesRouter);
 app.use('/api/productos', productosRouter);
 app.use('/api/facturas', facturasRouter);
+app.use('/api/divisas', divisasRouter);
 
 // Si el JSON enviado está mal escrito, respondemos en español en vez del error por defecto
 app.use((err, req, res, next) => {
