@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { obtenerFactura } from '../api.js'
-import { centimosAEuros } from '../utils/dinero.js'
+import { obtenerDivisas, obtenerFactura } from '../api.js'
+import { centimosADivisa, centimosAEuros } from '../utils/dinero.js'
 import { formatearFecha } from '../utils/fechas.js'
 
 function FacturaDetalle() {
@@ -21,6 +21,20 @@ function FacturaDetalle() {
       .catch((err) => setError(err.message))
       .finally(() => setCargando(false))
   }, [id])
+
+  // El total en otras divisas va aparte: si falla, el resto de la factura se ve igual
+  const totalCentimos = factura?.total_centimos
+  const [divisas, setDivisas] = useState(null)
+  const [errorDivisas, setErrorDivisas] = useState(false)
+
+  useEffect(() => {
+    setDivisas(null)
+    setErrorDivisas(false)
+    if (totalCentimos === undefined) return
+    obtenerDivisas(totalCentimos)
+      .then(setDivisas)
+      .catch(() => setErrorDivisas(true))
+  }, [totalCentimos])
 
   return (
     <>
@@ -105,6 +119,32 @@ function FacturaDetalle() {
               <dd className="vista-previa__total">{centimosAEuros(factura.total_centimos)}</dd>
             </div>
           </dl>
+
+          {/* Solo informativo: no sale al imprimir */}
+          <section className="factura__divisas no-imprimir">
+            <h2 className="subtitulo">Total en otras divisas</h2>
+            {!divisas && !errorDivisas && <p className="texto-suave">Cargando tipos de cambio...</p>}
+            {errorDivisas && (
+              <p className="texto-suave">
+                No se han podido cargar los tipos de cambio en este momento.
+              </p>
+            )}
+            {divisas && (
+              <>
+                <dl className="vista-previa">
+                  {Object.entries(divisas.importes_centimos).map(([divisa, centimos]) => (
+                    <div className="factura__fila-total" key={divisa}>
+                      <dt>{divisa}</dt>
+                      <dd>{centimosADivisa(centimos, divisa)}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <p className="texto-suave factura__divisas-fecha">
+                  Tipo de cambio del {formatearFecha(divisas.fecha)} (Banco Central Europeo)
+                </p>
+              </>
+            )}
+          </section>
         </article>
       )}
     </>
