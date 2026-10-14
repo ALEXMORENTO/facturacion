@@ -51,3 +51,7 @@ export const obtenerFactura = (id) => pedir(`/facturas/${id}`)
 
 // factura: { cliente_id, fecha: 'AAAA-MM-DD', lineas: [{ producto_id, cantidad }] }
 export const crearFactura = (factura) => enviar('/facturas', factura)
+
+// ----- Divisas -----
+// Devuelve { base, fecha, tipos, importes_centimos } con la cantidad pasada a USD, GBP y CHF
+export const obtenerDivisas = (centimos) => pedir(`/divisas?centimos=${centimos}`)
