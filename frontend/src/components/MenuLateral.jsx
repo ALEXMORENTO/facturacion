@@ -10,7 +10,10 @@ const ENLACES = [
 function MenuLateral() {
   return (
     <aside className="menu-lateral">
-      <div className="menu-lateral__marca">Facturación</div>
+      <div className="menu-lateral__marca">
+        Factur<span className="menu-lateral__marca-acento">í</span>n
+        <small className="menu-lateral__submarca">by Acenology</small>
+      </div>
 
       <nav>
         <ul className="menu-lateral__lista">

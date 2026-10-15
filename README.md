@@ -4,6 +4,8 @@ Facturín es un programa para hacer facturas desde tu propio ordenador. Guardas 
 
 Está pensado para un autónomo o un negocio pequeño que trabaja en un solo ordenador, sin internet y sin varios usuarios.
 
+> 📄 **¿Prefieres leerlo más cómodo?** Abre [`docs/index.html`](docs/index.html) en el navegador: es una página con todo el proyecto resumido (qué hace, cómo arrancarlo, tecnologías, esquema, divisas, mejoras y flujo de Git).
+
 ## Qué se puede hacer
 
 - Añadir y ver clientes (nombre, DNI, email y dirección).

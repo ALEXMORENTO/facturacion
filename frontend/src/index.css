@@ -1,19 +1,34 @@
-/* ===== Variables: colores y medidas que se repiten en toda la app ===== */
+/* ===== Variables: colores, fuentes y medidas que se repiten en toda la app =====
+   Estilo copiado de acenology.com: fondo casi negro, texto claro y acento dorado.
+   Para cambiar el aspecto de toda la app basta con tocar estos valores. */
 :root {
-  --color-fondo: #f6f7f9;
-  --color-superficie: #ffffff;
-  --color-borde: #e3e6eb;
-  --color-texto: #1f2933;
-  --color-texto-suave: #616e7c;
-  --color-acento: #2563eb;
-  --color-acento-suave: #eaf1fe;
+  /* Colores */
+  --color-fondo: #0a0f14; /* fondo general (casi negro) */
+  --color-superficie: #111820; /* tarjetas, tablas, formularios y menú */
+  --color-borde: #22303a; /* líneas y bordes */
+  --color-texto: #eef1f3; /* texto principal */
+  --color-texto-suave: #9aa8b3; /* textos secundarios y etiquetas */
+  --color-acento: #d6a14a; /* dorado: botones, enlaces, página activa */
+  --color-acento-hover: #e8b665; /* dorado más claro al pasar el ratón */
+  --color-acento-suave: rgba(214, 161, 74, 0.1); /* fondo dorado muy tenue */
+  --color-texto-sobre-acento: #0a0f14; /* texto dentro de un botón dorado */
+  --color-error: #ff5a3c;
+  --color-error-suave: rgba(255, 90, 60, 0.1);
 
+  /* Fuentes */
+  --fuente-texto: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fuente-titulos: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif;
+  --fuente-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /* Medidas */
   --ancho-menu: 232px;
-  --radio: 8px;
+  --radio: 0; /* la web usa esquinas rectas */
 
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Le dice al navegador que la app es oscura (desplegables, calendarios...) */
+  color-scheme: dark;
+  font-family: var(--fuente-texto);
   font-size: 15px;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--color-texto);
   background: var(--color-fondo);
   -webkit-font-smoothing: antialiased;
@@ -64,10 +79,30 @@ a {
 
 /* ===== Menú lateral ===== */
 .menu-lateral__marca {
-  padding: 0 12px 24px;
-  font-size: 18px;
-  font-weight: 700;
+  padding: 0 12px 28px;
+  font-family: var(--fuente-titulos);
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+}
+
+/* La "í" en dorado, como la "o" del nombre en la web */
+.menu-lateral__marca-acento {
   color: var(--color-acento);
+}
+
+.menu-lateral__submarca {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--fuente-mono);
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-texto-suave);
 }
 
 .menu-lateral__lista {
@@ -82,23 +117,27 @@ a {
 .menu-lateral__enlace {
   display: block;
   padding: 9px 12px;
+  border-left: 2px solid transparent;
   border-radius: var(--radio);
   color: var(--color-texto-suave);
-  font-weight: 500;
+  font-family: var(--fuente-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   text-decoration: none;
-  transition: background-color 0.15s, color 0.15s;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
 }
 
 .menu-lateral__enlace:hover {
-  background: var(--color-fondo);
+  background: var(--color-acento-suave);
   color: var(--color-texto);
 }
 
 /* React Router pone la clase "active" en el enlace de la página actual */
 .menu-lateral__enlace.active {
   background: var(--color-acento-suave);
-  color: var(--color-acento);
-  font-weight: 600;
+  border-left-color: var(--color-acento);
+  color: var(--color-texto);
 }
 
 .menu-lateral__enlace:focus-visible {
@@ -108,23 +147,69 @@ a {
 
 /* ===== Páginas ===== */
 .titulo-pagina {
-  font-size: 26px;
-  font-weight: 700;
-  margin-bottom: 24px;
+  font-family: var(--fuente-titulos);
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
 }
 
 .texto-suave {
   color: var(--color-texto-suave);
 }
 
+/* ===== Página de inicio ===== */
+.inicio {
+  max-width: 1000px;
+}
+
+/* Texto pequeño dorado encima del título, como en la web */
+.inicio__antetitulo {
+  margin: 0 0 14px;
+  font-family: var(--fuente-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-acento);
+}
+
+.inicio__titulo {
+  font-size: clamp(44px, 6vw, 76px);
+  line-height: 0.92;
+  margin-bottom: 18px;
+}
+
+.inicio__destacado {
+  color: var(--color-acento);
+}
+
+.inicio__texto {
+  max-width: 52ch;
+  margin: 0 0 28px;
+  font-size: 17px;
+}
+
+.inicio__imagen {
+  margin: 12px 0 0;
+  border: 1px solid var(--color-borde);
+}
+
+.inicio__imagen img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 /* ===== Mensajes de error ===== */
 .mensaje-error {
   margin: 0 0 16px;
   padding: 10px 14px;
-  border: 1px solid #f5c2c2;
+  border: 1px solid var(--color-error);
   border-radius: var(--radio);
-  background: #fdecec;
-  color: #b91c1c;
+  background: var(--color-error-suave);
+  color: var(--color-error);
 }
 
 /* ===== Formularios ===== */
@@ -134,52 +219,74 @@ a {
   align-items: flex-end;
   gap: 12px;
   margin-bottom: 24px;
-  padding: 16px;
+  padding: 20px;
   background: var(--color-superficie);
   border: 1px solid var(--color-borde);
   border-radius: var(--radio);
 }
 
+/* Etiquetas de los campos: pequeñas, en mayúsculas y con letra de máquina */
 .campo {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-size: 13px;
-  font-weight: 500;
+  gap: 6px;
+  font-family: var(--fuente-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--color-texto-suave);
 }
 
 .campo input,
 .campo select {
   min-width: 160px;
-  padding: 8px 10px;
-  font: inherit;
+  padding: 9px 10px;
+  font-family: var(--fuente-texto);
   font-size: 15px;
+  letter-spacing: normal;
+  text-transform: none;
   color: var(--color-texto);
-  background: var(--color-superficie);
+  background: var(--color-fondo);
   border: 1px solid var(--color-borde);
   border-radius: var(--radio);
 }
 
 .campo input:focus,
 .campo select:focus {
-  outline: 2px solid var(--color-acento);
+  outline: 1px solid var(--color-acento);
   outline-offset: -1px;
+  border-color: var(--color-acento);
 }
 
 .boton {
-  padding: 9px 16px;
-  font: inherit;
-  font-weight: 600;
-  color: #fff;
+  padding: 10px 18px;
+  font-family: var(--fuente-titulos);
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-texto-sobre-acento);
   background: var(--color-acento);
-  border: none;
+  border: 1px solid var(--color-acento);
   border-radius: var(--radio);
   cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.boton:hover:not(:disabled) {
+  background: var(--color-acento-hover);
+  border-color: var(--color-acento-hover);
+}
+
+.boton:focus-visible {
+  outline: 2px solid var(--color-acento);
+  outline-offset: 3px;
 }
 
 .boton:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: default;
 }
 
@@ -194,20 +301,24 @@ a {
 
 .tabla th,
 .tabla td {
-  padding: 10px 14px;
+  padding: 11px 14px;
   text-align: left;
   border-bottom: 1px solid var(--color-borde);
 }
 
 .tabla th {
-  font-size: 13px;
-  font-weight: 600;
+  font-family: var(--fuente-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--color-texto-suave);
 }
 
 /* Las cantidades se alinean a la derecha para que las cifras cuadren */
 .tabla .numero {
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ===== Formulario de factura ===== */
@@ -227,8 +338,11 @@ a {
 
 .subtitulo {
   margin: 8px 0 0;
-  font-size: 16px;
+  font-family: var(--fuente-titulos);
+  font-size: 22px;
   font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .campo .campo__cantidad {
@@ -238,9 +352,14 @@ a {
 
 /* Botón con menos peso visual: Añadir línea, Quitar, Cancelar */
 .boton--secundario {
-  color: var(--color-acento);
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde);
+  color: var(--color-texto);
+  background: transparent;
+  border: 1px solid rgba(214, 161, 74, 0.6);
+}
+
+.boton--secundario:hover:not(:disabled) {
+  background: var(--color-acento-suave);
+  border-color: var(--color-acento);
 }
 
 .boton--separado {
@@ -254,6 +373,7 @@ a {
   justify-content: end;
   gap: 4px 24px;
   margin: 8px 0 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .vista-previa dt {
@@ -267,6 +387,7 @@ a {
 
 .vista-previa__total {
   font-weight: 700;
+  color: var(--color-acento);
 }
 
 /* ===== Listado de facturas: filas que se pueden pinchar ===== */
@@ -348,6 +469,19 @@ a.boton {
 
 /* ===== Al imprimir ===== */
 @media print {
+  /* En papel: blanco y negro. Cambiando las variables, toda la factura
+     pasa a texto negro sobre fondo blanco, sin dorado ni fondos oscuros */
+  :root {
+    --color-fondo: #fff;
+    --color-superficie: #fff;
+    --color-borde: #999;
+    --color-texto: #000;
+    --color-texto-suave: #333;
+    --color-acento: #000;
+    --color-acento-suave: transparent;
+    color-scheme: light;
+  }
+
   /* Fuera el menú lateral y los botones */
   .menu-lateral,
   .no-imprimir {
@@ -365,6 +499,7 @@ a.boton {
   body,
   :root {
     background: #fff;
+    color: #000;
   }
 
   /* En papel sobran el marco y el fondo de la tarjeta */
