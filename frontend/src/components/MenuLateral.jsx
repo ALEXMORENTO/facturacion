@@ -11,8 +11,12 @@ function MenuLateral() {
   return (
     <aside className="menu-lateral">
       <div className="menu-lateral__marca">
-        Factur<span className="menu-lateral__marca-acento">í</span>n
-        <small className="menu-lateral__submarca">by Acenology</small>
+        {/* El círculo dorado con el hilo, icono de Acenology. alt vacío: el nombre ya va escrito al lado */}
+        <img className="menu-lateral__logo" src="/logo-acenology.png" alt="" />
+        <div>
+          Factur<span className="menu-lateral__marca-acento">í</span>n
+          <small className="menu-lateral__submarca">by Acenology</small>
+        </div>
       </div>
 
       <nav>

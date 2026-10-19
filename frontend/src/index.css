@@ -1,19 +1,23 @@
 /* ===== Variables: colores, fuentes y medidas que se repiten en toda la app =====
-   Estilo copiado de acenology.com: fondo casi negro, texto claro y acento dorado.
+   Estilo de la web nueva de acenology.com: papel claro, tinta oscura y un hilo dorado.
    Para cambiar el aspecto de toda la app basta con tocar estos valores. */
 :root {
   /* Colores */
-  --color-fondo: #0a0f14; /* fondo general (casi negro) */
-  --color-superficie: #111820; /* tarjetas, tablas, formularios y menú */
-  --color-borde: #22303a; /* líneas y bordes */
-  --color-texto: #eef1f3; /* texto principal */
-  --color-texto-suave: #9aa8b3; /* textos secundarios y etiquetas */
-  --color-acento: #d6a14a; /* dorado: botones, enlaces, página activa */
-  --color-acento-hover: #e8b665; /* dorado más claro al pasar el ratón */
-  --color-acento-suave: rgba(214, 161, 74, 0.1); /* fondo dorado muy tenue */
-  --color-texto-sobre-acento: #0a0f14; /* texto dentro de un botón dorado */
-  --color-error: #ff5a3c;
-  --color-error-suave: rgba(255, 90, 60, 0.1);
+  --color-fondo: #eceeea; /* papel: fondo general */
+  --color-superficie: #f7f8f5; /* tarjetas, tablas, formularios y menú */
+  --color-campo: #fff; /* fondo de las cajas de texto y desplegables */
+  --color-borde: #cdd2cc; /* líneas de separación (decorativas) */
+  --color-borde-campo: #7d8892; /* borde de las cajas de texto: se tiene que ver bien */
+  --color-texto: #15202a; /* tinta: texto principal */
+  --color-texto-suave: #3b4852; /* gris: textos secundarios y etiquetas */
+  --color-acento: #c48a22; /* dorado: relleno de botones y marcas */
+  --color-acento-hover: #d49a33; /* dorado más claro al pasar el ratón */
+  --color-acento-texto: #7e5510; /* dorado oscuro: el claro no se lee sobre papel */
+  --color-acento-suave: rgba(196, 138, 34, 0.12); /* fondo dorado muy tenue */
+  --color-acento-borde: rgba(196, 138, 34, 0.7); /* borde de los botones secundarios */
+  --color-texto-sobre-acento: #15202a; /* texto dentro de un botón dorado */
+  --color-error: #b4442e; /* rojo "atasco" de la marca */
+  --color-error-suave: rgba(180, 68, 46, 0.08);
 
   /* Fuentes */
   --fuente-texto: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -24,8 +28,8 @@
   --ancho-menu: 232px;
   --radio: 0; /* la web usa esquinas rectas */
 
-  /* Le dice al navegador que la app es oscura (desplegables, calendarios...) */
-  color-scheme: dark;
+  /* Le dice al navegador que la app es clara (desplegables, calendarios...) */
+  color-scheme: light;
   font-family: var(--fuente-texto);
   font-size: 15px;
   line-height: 1.55;
@@ -54,7 +58,12 @@ h3 {
 }
 
 a {
-  color: var(--color-acento);
+  color: var(--color-acento-texto);
+}
+
+::selection {
+  background: var(--color-acento-suave);
+  color: var(--color-texto);
 }
 
 /* ===== Estructura: menú a la izquierda, contenido a la derecha ===== */
@@ -79,7 +88,10 @@ a {
 
 /* ===== Menú lateral ===== */
 .menu-lateral__marca {
-  padding: 0 12px 28px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px 28px 0;
   font-family: var(--fuente-titulos);
   font-size: 30px;
   font-weight: 800;
@@ -87,6 +99,15 @@ a {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-texto);
+}
+
+/* El PNG del logo trae fondo blanco y mucho margen alrededor del círculo.
+   "multiply" hace que el blanco desaparezca sobre el papel del menú */
+.menu-lateral__logo {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  mix-blend-mode: multiply;
 }
 
 /* La "í" en dorado, como la "o" del nombre en la web */
@@ -141,7 +162,7 @@ a {
 }
 
 .menu-lateral__enlace:focus-visible {
-  outline: 2px solid var(--color-acento);
+  outline: 2px solid var(--color-acento-texto);
   outline-offset: 2px;
 }
 
@@ -172,7 +193,7 @@ a {
   font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-acento);
+  color: var(--color-acento-texto);
 }
 
 .inicio__titulo {
@@ -182,7 +203,7 @@ a {
 }
 
 .inicio__destacado {
-  color: var(--color-acento);
+  color: var(--color-acento-texto);
 }
 
 .inicio__texto {
@@ -212,6 +233,55 @@ a {
   color: var(--color-error);
 }
 
+/* Confirmación de que algo ha salido bien (por ejemplo, al emitir una factura).
+   Dorado de la marca: el "flujo" que sigue su curso */
+.mensaje-exito {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-acento);
+  border-radius: var(--radio);
+  background: var(--color-acento-suave);
+  color: var(--color-texto);
+  font-weight: 600;
+}
+
+/* Algo que conviene arreglar, aunque no impide seguir (por ejemplo, faltan tus datos de emisor) */
+.mensaje-aviso {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border-radius: var(--radio);
+  background: var(--color-error-suave);
+  color: var(--color-texto);
+}
+
+.mensaje-aviso strong {
+  color: var(--color-error);
+}
+
+/* Etiqueta pequeña para títulos de apoyo, que no deben competir con el contenido */
+.etiqueta {
+  margin: 0 0 6px;
+  font-family: var(--fuente-mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-texto-suave);
+}
+
+/* Aviso justo encima del botón de emitir: una factura emitida ya no se puede cambiar */
+.aviso-emitir {
+  margin: 8px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-borde);
+  max-width: 70ch;
+}
+
+/* Dentro del formulario de factura el error va pegado al botón, sin margen extra */
+.formulario--columna .mensaje-error {
+  margin: 0;
+}
+
 /* ===== Formularios ===== */
 .formulario {
   display: flex;
@@ -235,6 +305,7 @@ a {
   font-weight: 400;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  line-height: 16px; /* fijo: el botón Quitar cuenta con esta altura */
   color: var(--color-texto-suave);
 }
 
@@ -242,21 +313,22 @@ a {
 .campo select {
   min-width: 160px;
   padding: 9px 10px;
+  line-height: 20px; /* misma altura para cajas de texto y desplegables */
   font-family: var(--fuente-texto);
   font-size: 15px;
   letter-spacing: normal;
   text-transform: none;
   color: var(--color-texto);
-  background: var(--color-fondo);
-  border: 1px solid var(--color-borde);
+  background: var(--color-campo);
+  border: 1px solid var(--color-borde-campo);
   border-radius: var(--radio);
 }
 
 .campo input:focus,
 .campo select:focus {
-  outline: 1px solid var(--color-acento);
+  outline: 1px solid var(--color-acento-texto);
   outline-offset: -1px;
-  border-color: var(--color-acento);
+  border-color: var(--color-acento-texto);
 }
 
 .boton {
@@ -281,7 +353,7 @@ a {
 }
 
 .boton:focus-visible {
-  outline: 2px solid var(--color-acento);
+  outline: 2px solid var(--color-acento-texto);
   outline-offset: 3px;
 }
 
@@ -315,6 +387,11 @@ a {
   color: var(--color-texto-suave);
 }
 
+/* El total de cada factura en el listado, algo más marcado que el resto */
+.tabla .tabla__total {
+  font-weight: 600;
+}
+
 /* Las cantidades se alinean a la derecha para que las cifras cuadren */
 .tabla .numero {
   text-align: right;
@@ -326,6 +403,50 @@ a {
 .formulario--columna {
   flex-direction: column;
   align-items: stretch;
+  /* Estrecho para que los totales queden justo debajo de las líneas, sin un hueco en medio */
+  max-width: 760px;
+}
+
+/* Fila de campos que pueden mostrar un error debajo: se alinean por arriba,
+   así un error en un campo no descoloca a los de al lado */
+.fila-campos.fila-campos--arriba {
+  align-items: flex-start;
+}
+
+/* El botón Quitar baja lo que mide la etiqueta (16px de línea + 6px de hueco)
+   para quedar a la altura de las cajas */
+.fila-campos--arriba > .boton {
+  margin-top: 22px;
+}
+
+/* Error de un campo concreto, justo debajo de él */
+.campo__error {
+  font-family: var(--fuente-texto);
+  font-size: 13px;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--color-error);
+}
+
+.campo [aria-invalid='true'] {
+  border-color: var(--color-error);
+  outline: 1px solid var(--color-error);
+  outline-offset: -1px;
+}
+
+/* Botón casi sin peso, para salir sin hacer nada (Cancelar) */
+.boton--texto {
+  color: var(--color-texto-suave);
+  background: transparent;
+  border-color: transparent;
+}
+
+.boton--texto:hover:not(:disabled) {
+  color: var(--color-texto);
+  background: transparent;
+  border-color: transparent;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 /* Varios campos y botones en la misma fila */
@@ -354,7 +475,7 @@ a {
 .boton--secundario {
   color: var(--color-texto);
   background: transparent;
-  border: 1px solid rgba(214, 161, 74, 0.6);
+  border: 1px solid var(--color-acento-borde);
 }
 
 .boton--secundario:hover:not(:disabled) {
@@ -371,12 +492,15 @@ a {
   display: grid;
   grid-template-columns: auto auto;
   justify-content: end;
-  gap: 4px 24px;
+  align-items: baseline;
+  /* Sin hueco entre columnas (lo pone el padding del dt) para que la línea del total sea continua */
+  gap: 4px 0;
   margin: 8px 0 0;
   font-variant-numeric: tabular-nums;
 }
 
 .vista-previa dt {
+  padding-right: 32px;
   color: var(--color-texto-suave);
 }
 
@@ -385,9 +509,32 @@ a {
   text-align: right;
 }
 
-.vista-previa__total {
-  font-weight: 700;
-  color: var(--color-acento);
+/* El total es lo más importante de la factura: grande, con una raya gruesa encima */
+.vista-previa .vista-previa__total-etiqueta,
+.vista-previa .vista-previa__total {
+  /* stretch: las dos celdas empiezan a la misma altura y la raya sale recta */
+  align-self: stretch;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 2px solid var(--color-texto);
+}
+
+/* La palabra "Total" se apoya abajo, a la altura de la cifra grande */
+.vista-previa .vista-previa__total-etiqueta {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 3px;
+  color: var(--color-texto);
+  font-weight: 600;
+}
+
+.vista-previa .vista-previa__total {
+  font-family: var(--fuente-titulos);
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--color-texto);
 }
 
 /* ===== Listado de facturas: filas que se pueden pinchar ===== */
@@ -396,9 +543,21 @@ a {
 }
 
 .fila-enlace:hover,
-.fila-enlace:focus-visible {
+.fila-enlace:focus-within {
   background: var(--color-acento-suave);
-  outline: none;
+}
+
+/* Número de factura en el listado: es el enlace al detalle */
+.tabla__numero-factura {
+  font-family: var(--fuente-mono);
+  font-size: 14px;
+  font-weight: 500;
+  text-underline-offset: 3px;
+}
+
+.tabla__numero-factura:focus-visible {
+  outline: 2px solid var(--color-acento-texto);
+  outline-offset: 2px;
 }
 
 /* ===== Detalle de factura ===== */
@@ -433,12 +592,25 @@ a.boton {
   margin: 0;
 }
 
-.factura__cliente {
+/* Emisor y cliente, uno al lado del otro */
+.factura__partes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 48px;
+}
+
+.factura__parte {
   min-width: 220px;
 }
 
-.factura__cliente .subtitulo {
+.factura__parte .subtitulo {
   margin: 0 0 4px;
+}
+
+/* "Faltan tus datos" dentro del bloque del emisor (no sale al imprimir) */
+.factura__falta {
+  color: var(--color-error);
+  font-weight: 600;
 }
 
 .factura__totales {
@@ -474,10 +646,13 @@ a.boton {
   :root {
     --color-fondo: #fff;
     --color-superficie: #fff;
+    --color-campo: #fff;
     --color-borde: #999;
+    --color-borde-campo: #999;
     --color-texto: #000;
     --color-texto-suave: #333;
     --color-acento: #000;
+    --color-acento-texto: #000;
     --color-acento-suave: transparent;
     color-scheme: light;
   }

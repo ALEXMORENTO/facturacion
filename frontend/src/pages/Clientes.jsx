@@ -52,7 +52,11 @@ function Clientes() {
     <>
       <h1 className="titulo-pagina">Clientes</h1>
 
-      {error && <p className="mensaje-error">{error}</p>}
+      {error && (
+        <p className="mensaje-error" role="alert">
+          {error}
+        </p>
+      )}
 
       {/* noValidate: sin los avisos propios del navegador, para que el error del backend salga en rojo */}
       <form className="formulario" onSubmit={guardar} noValidate>

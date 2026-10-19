@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { crearFactura, listarClientes, listarFacturas, listarProductos } from '../api.js'
 import { centimosAEuros } from '../utils/dinero.js'
 import { formatearFecha } from '../utils/fechas.js'
@@ -53,6 +53,9 @@ function Facturas() {
   const [productos, setProductos] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
+  // Qué campo tiene el error ('cliente', 'fecha', 'producto-3', 'cantidad-3'...), para mostrarlo
+  // debajo de ese campo. Vacío si el error es de la factura en general (por ejemplo, del servidor)
+  const [campoConError, setCampoConError] = useState('')
 
   // Estado del formulario de nueva factura
   const [mostrandoFormulario, setMostrandoFormulario] = useState(false)
@@ -83,8 +86,33 @@ function Facturas() {
       .finally(() => setCargando(false))
   }, [])
 
+  // Muestra el error debajo del campo y lleva el cursor a él
+  function marcarError(campo, mensaje) {
+    setError(mensaje)
+    setCampoConError(campo)
+    document.getElementById(`campo-${campo}`)?.focus()
+  }
+
+  // Lo que necesita cada campo para avisar de su error: borde rojo y el mensaje enlazado
+  function propsDeError(campo) {
+    return campoConError === campo
+      ? { 'aria-invalid': true, 'aria-describedby': `error-${campo}` }
+      : {}
+  }
+
+  function mensajeDeCampo(campo) {
+    return (
+      campoConError === campo && (
+        <span id={`error-${campo}`} className="campo__error" role="alert">
+          {error}
+        </span>
+      )
+    )
+  }
+
   function abrirFormulario() {
     setError('')
+    setCampoConError('')
     setClienteId('')
     setFecha(hoy())
     setLineas([lineaNueva()])
@@ -93,6 +121,7 @@ function Facturas() {
 
   function cerrarFormulario() {
     setError('')
+    setCampoConError('')
     setMostrandoFormulario(false)
   }
 
@@ -114,9 +143,14 @@ function Facturas() {
     // Evita que el navegador recargue la página al enviar el formulario
     evento.preventDefault()
     setError('')
+    setCampoConError('')
 
     if (clienteId === '') {
-      setError('Elige un cliente')
+      marcarError('cliente', 'Elige un cliente')
+      return
+    }
+    if (fecha === '') {
+      marcarError('fecha', 'Elige la fecha de la factura')
       return
     }
     if (lineas.length === 0) {
@@ -125,14 +159,14 @@ function Facturas() {
     }
 
     const lineasParaEnviar = []
-    for (const [indice, linea] of lineas.entries()) {
+    for (const linea of lineas) {
       if (linea.producto_id === '') {
-        setError(`Línea ${indice + 1}: elige un producto`)
+        marcarError(`producto-${linea.id}`, 'Elige un producto')
         return
       }
       const cantidad = leerCantidad(linea.cantidad)
       if (cantidad === null) {
-        setError(`Línea ${indice + 1}: la cantidad debe ser un número entero mayor que 0`)
+        marcarError(`cantidad-${linea.id}`, 'Escribe un número entero mayor que 0')
         return
       }
       // Los desplegables devuelven texto ("3"); el backend espera números
@@ -142,24 +176,31 @@ function Facturas() {
     setGuardando(true)
     try {
       // Solo mandamos qué se vende y cuánto: precios, IVA y totales los pone el backend
-      await crearFactura({ cliente_id: Number(clienteId), fecha, lineas: lineasParaEnviar })
-      // Volvemos a pedir el listado para que traiga el nombre y DNI del cliente y el orden correcto
-      setFacturas(await listarFacturas())
-      setMostrandoFormulario(false)
+      const nueva = await crearFactura({ cliente_id: Number(clienteId), fecha, lineas: lineasParaEnviar })
+      // Abrimos la factura recién emitida; "recienEmitida" le dice a esa página que muestre el aviso de éxito
+      navigate(`/facturas/${nueva.id}`, { state: { recienEmitida: true } })
     } catch (err) {
       setError(err.message)
-    } finally {
       setGuardando(false)
     }
   }
 
   const vistaPrevia = calcularVistaPrevia(lineas, productos)
 
+  // Las facturas van en orden de fecha: una nueva no puede ser anterior a la última.
+  // El listado viene de la más reciente a la más antigua, así que la última es la primera.
+  const fechaMinima = facturas[0]?.fecha
+
   return (
     <>
       <h1 className="titulo-pagina">Facturas</h1>
 
-      {error && <p className="mensaje-error">{error}</p>}
+      {/* Con el formulario abierto, el error sale junto al botón de emitir (más abajo) */}
+      {error && !mostrandoFormulario && (
+        <p className="mensaje-error" role="alert">
+          {error}
+        </p>
+      )}
 
       {!mostrandoFormulario && (
         <button className="boton boton--separado" onClick={abrirFormulario} disabled={cargando}>
@@ -168,11 +209,19 @@ function Facturas() {
       )}
 
       {mostrandoFormulario && (
-        <form className="formulario formulario--columna" onSubmit={guardar}>
-          <div className="fila-campos">
+        // noValidate: los errores los mostramos nosotros, en español y junto al botón,
+        // en vez de los globos del navegador
+        <form className="formulario formulario--columna" onSubmit={guardar} noValidate>
+          <div className="fila-campos fila-campos--arriba">
             <label className="campo">
               Cliente *
-              <select value={clienteId} onChange={(e) => setClienteId(e.target.value)} required>
+              <select
+                id="campo-cliente"
+                value={clienteId}
+                onChange={(e) => setClienteId(e.target.value)}
+                required
+                {...propsDeError('cliente')}
+              >
                 <option value="">Elige un cliente</option>
                 {clientes.map((cliente) => (
                   <option key={cliente.id} value={cliente.id}>
@@ -181,10 +230,20 @@ function Facturas() {
                   </option>
                 ))}
               </select>
+              {mensajeDeCampo('cliente')}
             </label>
             <label className="campo">
               Fecha *
-              <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} required />
+              <input
+                id="campo-fecha"
+                type="date"
+                value={fecha}
+                min={fechaMinima}
+                onChange={(e) => setFecha(e.target.value)}
+                required
+                {...propsDeError('fecha')}
+              />
+              {mensajeDeCampo('fecha')}
             </label>
           </div>
 
@@ -200,13 +259,15 @@ function Facturas() {
           {lineas.map((linea, indice) => (
             // "key" con el id de la línea (no con el índice) para que, al quitar una,
             // React no mezcle lo escrito en las demás
-            <div className="fila-campos" key={linea.id}>
+            <div className="fila-campos fila-campos--arriba" key={linea.id}>
               <label className="campo">
                 Producto {indice + 1}
                 <select
+                  id={`campo-producto-${linea.id}`}
                   value={linea.producto_id}
                   onChange={(e) => cambiarLinea(linea.id, 'producto_id', e.target.value)}
                   required
+                  {...propsDeError(`producto-${linea.id}`)}
                 >
                   <option value="">Elige un producto</option>
                   {productos.map((producto) => (
@@ -216,10 +277,12 @@ function Facturas() {
                     </option>
                   ))}
                 </select>
+                {mensajeDeCampo(`producto-${linea.id}`)}
               </label>
               <label className="campo">
                 Cantidad
                 <input
+                  id={`campo-cantidad-${linea.id}`}
                   className="campo__cantidad"
                   type="number"
                   min="1"
@@ -227,7 +290,9 @@ function Facturas() {
                   value={linea.cantidad}
                   onChange={(e) => cambiarLinea(linea.id, 'cantidad', e.target.value)}
                   required
+                  {...propsDeError(`cantidad-${linea.id}`)}
                 />
+                {mensajeDeCampo(`cantidad-${linea.id}`)}
               </label>
               <button
                 className="boton boton--secundario"
@@ -251,17 +316,27 @@ function Facturas() {
             <dd>{centimosAEuros(vistaPrevia.base)}</dd>
             <dt>IVA</dt>
             <dd>{centimosAEuros(vistaPrevia.iva)}</dd>
-            <dt>Total</dt>
+            <dt className="vista-previa__total-etiqueta">Total</dt>
             <dd className="vista-previa__total">{centimosAEuros(vistaPrevia.total)}</dd>
           </dl>
-          <p className="texto-suave">Importes orientativos: los definitivos los calcula el servidor al guardar.</p>
+          <p className="aviso-emitir">
+            Al emitirla se le asigna el siguiente número correlativo y ya no se podrá modificar ni
+            borrar. Revisa el cliente, la fecha y las líneas antes de continuar.
+          </p>
+
+          {/* Los errores de un campo salen debajo de ese campo; aquí solo los generales */}
+          {error && !campoConError && (
+            <p className="mensaje-error" role="alert">
+              {error}
+            </p>
+          )}
 
           <div className="fila-campos">
             <button className="boton" type="submit" disabled={guardando}>
-              {guardando ? 'Guardando...' : 'Guardar factura'}
+              {guardando ? 'Emitiendo...' : 'Emitir factura'}
             </button>
             <button
-              className="boton boton--secundario"
+              className="boton boton--texto"
               type="button"
               onClick={cerrarFormulario}
               disabled={guardando}
@@ -282,6 +357,7 @@ function Facturas() {
           <table className="tabla">
             <thead>
               <tr>
+                <th>Nº</th>
                 <th>Fecha</th>
                 <th>Cliente</th>
                 <th>DNI</th>
@@ -291,20 +367,23 @@ function Facturas() {
             </thead>
             <tbody>
               {facturas.map((factura) => (
-                // Toda la fila lleva al detalle. tabIndex y onKeyDown permiten abrirla también
-                // con el teclado (tabulador + Intro), no solo con el ratón
+                // Con el ratón, toda la fila lleva al detalle. Con el teclado se llega
+                // por el enlace del número (tabulador + Intro)
                 <tr
                   key={factura.id}
                   className="fila-enlace"
                   onClick={() => navigate(`/facturas/${factura.id}`)}
-                  onKeyDown={(e) => e.key === 'Enter' && navigate(`/facturas/${factura.id}`)}
-                  tabIndex={0}
                 >
+                  <td>
+                    <Link className="tabla__numero-factura" to={`/facturas/${factura.id}`}>
+                      {factura.numero}
+                    </Link>
+                  </td>
                   <td>{formatearFecha(factura.fecha)}</td>
                   <td>{factura.cliente_nombre}</td>
                   <td>{factura.cliente_dni ?? '—'}</td>
                   <td className="numero">{centimosAEuros(factura.iva_centimos)}</td>
-                  <td className="numero">{centimosAEuros(factura.total_centimos)}</td>
+                  <td className="numero tabla__total">{centimosAEuros(factura.total_centimos)}</td>
                 </tr>
               ))}
             </tbody>
