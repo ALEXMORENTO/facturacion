@@ -1,19 +1,38 @@
-/* ===== Variables: colores y medidas que se repiten en toda la app ===== */
+/* ===== Variables: colores, fuentes y medidas que se repiten en toda la app =====
+   Estilo de la web nueva de acenology.com: papel claro, tinta oscura y un hilo dorado.
+   Para cambiar el aspecto de toda la app basta con tocar estos valores. */
 :root {
-  --color-fondo: #f6f7f9;
-  --color-superficie: #ffffff;
-  --color-borde: #e3e6eb;
-  --color-texto: #1f2933;
-  --color-texto-suave: #616e7c;
-  --color-acento: #2563eb;
-  --color-acento-suave: #eaf1fe;
+  /* Colores */
+  --color-fondo: #eceeea; /* papel: fondo general */
+  --color-superficie: #fbfcfa; /* tarjetas, tablas, formularios y menú */
+  --color-campo: #fff; /* fondo de las cajas de texto y desplegables */
+  --color-borde: #bcc2bb; /* líneas de separación: marcan dónde empieza cada tarjeta */
+  --color-borde-campo: #7d8892; /* borde de las cajas de texto: se tiene que ver bien */
+  --color-texto: #15202a; /* tinta: texto principal */
+  --color-texto-suave: #3b4852; /* gris: textos secundarios y etiquetas */
+  --color-acento: #c48a22; /* dorado: relleno de botones y marcas */
+  --color-acento-hover: #d49a33; /* dorado más claro al pasar el ratón */
+  --color-acento-texto: #7e5510; /* dorado oscuro: el claro no se lee sobre papel */
+  --color-acento-suave: rgba(196, 138, 34, 0.12); /* fondo dorado muy tenue */
+  --color-acento-borde: #9a6a17; /* borde de los botones secundarios: oscuro para que se vea bien */
+  --color-texto-sobre-acento: #15202a; /* texto dentro de un botón dorado */
+  --color-error: #b4442e; /* rojo "atasco" de la marca */
+  --color-error-suave: rgba(180, 68, 46, 0.08);
 
+  /* Fuentes */
+  --fuente-texto: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fuente-titulos: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif;
+  --fuente-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /* Medidas */
   --ancho-menu: 232px;
-  --radio: 8px;
+  --radio: 0; /* la web usa esquinas rectas */
 
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Le dice al navegador que la app es clara (desplegables, calendarios...) */
+  color-scheme: light;
+  font-family: var(--fuente-texto);
   font-size: 15px;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--color-texto);
   background: var(--color-fondo);
   -webkit-font-smoothing: antialiased;
@@ -39,7 +58,12 @@ h3 {
 }
 
 a {
-  color: var(--color-acento);
+  color: var(--color-acento-texto);
+}
+
+::selection {
+  background: var(--color-acento-suave);
+  color: var(--color-texto);
 }
 
 /* ===== Estructura: menú a la izquierda, contenido a la derecha ===== */
@@ -64,10 +88,42 @@ a {
 
 /* ===== Menú lateral ===== */
 .menu-lateral__marca {
-  padding: 0 12px 24px;
-  font-size: 18px;
-  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px 28px 0;
+  font-family: var(--fuente-titulos);
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+}
+
+/* El PNG del logo trae fondo blanco y mucho margen alrededor del círculo.
+   "multiply" hace que el blanco desaparezca sobre el papel del menú */
+.menu-lateral__logo {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  mix-blend-mode: multiply;
+}
+
+/* La "í" en dorado, como la "o" del nombre en la web */
+.menu-lateral__marca-acento {
   color: var(--color-acento);
+}
+
+.menu-lateral__submarca {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--fuente-mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-texto-suave);
 }
 
 .menu-lateral__lista {
@@ -82,49 +138,153 @@ a {
 .menu-lateral__enlace {
   display: block;
   padding: 9px 12px;
+  border-left: 2px solid transparent;
   border-radius: var(--radio);
   color: var(--color-texto-suave);
+  font-size: 15px;
   font-weight: 500;
   text-decoration: none;
-  transition: background-color 0.15s, color 0.15s;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
 }
 
 .menu-lateral__enlace:hover {
-  background: var(--color-fondo);
+  background: var(--color-acento-suave);
   color: var(--color-texto);
 }
 
 /* React Router pone la clase "active" en el enlace de la página actual */
 .menu-lateral__enlace.active {
   background: var(--color-acento-suave);
-  color: var(--color-acento);
-  font-weight: 600;
+  border-left-color: var(--color-acento);
+  color: var(--color-texto);
 }
 
 .menu-lateral__enlace:focus-visible {
-  outline: 2px solid var(--color-acento);
+  outline: 2px solid var(--color-acento-texto);
   outline-offset: 2px;
 }
 
 /* ===== Páginas ===== */
 .titulo-pagina {
-  font-size: 26px;
-  font-weight: 700;
-  margin-bottom: 24px;
+  font-family: var(--fuente-titulos);
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
 }
 
 .texto-suave {
   color: var(--color-texto-suave);
 }
 
+/* ===== Página de inicio ===== */
+.inicio {
+  max-width: 1000px;
+}
+
+.inicio__titulo {
+  font-size: clamp(44px, 6vw, 76px);
+  line-height: 0.92;
+  margin-bottom: 18px;
+}
+
+.inicio__destacado {
+  color: var(--color-acento-texto);
+}
+
+.inicio__texto {
+  max-width: 52ch;
+  margin: 0 0 28px;
+  font-size: 17px;
+}
+
+/* Últimas facturas en la página de inicio */
+.inicio__ultimas {
+  margin-top: 40px;
+}
+
+.inicio__ultimas-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+}
+
+.inicio__ultimas-cabecera .subtitulo {
+  margin: 0;
+}
+
+.inicio__imagen {
+  margin: 40px 0 0;
+  border: 1px solid var(--color-borde);
+}
+
+.inicio__imagen img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 /* ===== Mensajes de error ===== */
 .mensaje-error {
   margin: 0 0 16px;
   padding: 10px 14px;
-  border: 1px solid #f5c2c2;
+  border: 1px solid var(--color-error);
   border-radius: var(--radio);
-  background: #fdecec;
-  color: #b91c1c;
+  background: var(--color-error-suave);
+  color: var(--color-error);
+}
+
+/* Confirmación de que algo ha salido bien (por ejemplo, al emitir una factura).
+   Dorado de la marca: el "flujo" que sigue su curso */
+.mensaje-exito {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-acento);
+  border-radius: var(--radio);
+  background: var(--color-acento-suave);
+  color: var(--color-texto);
+  font-weight: 600;
+}
+
+/* Algo que conviene arreglar, aunque no impide seguir (por ejemplo, faltan tus datos de emisor) */
+.mensaje-aviso {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-error);
+  border-left-width: 4px;
+  border-radius: var(--radio);
+  background: var(--color-error-suave);
+  color: var(--color-texto);
+}
+
+.mensaje-aviso strong {
+  color: var(--color-error);
+}
+
+/* Etiqueta pequeña para títulos de apoyo, que no deben competir con el contenido */
+.etiqueta {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-texto-suave);
+}
+
+/* Aviso justo encima del botón de emitir: una factura emitida ya no se puede cambiar */
+.aviso-emitir {
+  margin: 8px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-borde);
+  max-width: 70ch;
+}
+
+/* Dentro del formulario de factura el error va pegado al botón, sin margen extra */
+.formulario--columna .mensaje-error {
+  margin: 0;
 }
 
 /* ===== Formularios ===== */
@@ -134,52 +294,72 @@ a {
   align-items: flex-end;
   gap: 12px;
   margin-bottom: 24px;
-  padding: 16px;
+  padding: 20px;
   background: var(--color-superficie);
   border: 1px solid var(--color-borde);
   border-radius: var(--radio);
 }
 
+/* Etiquetas de los campos: pequeñas y en negrita, pero en minúsculas para que se lean bien */
 .campo {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 16px; /* fijo: el botón Quitar cuenta con esta altura */
   color: var(--color-texto-suave);
 }
 
 .campo input,
 .campo select {
   min-width: 160px;
-  padding: 8px 10px;
-  font: inherit;
+  padding: 9px 10px;
+  line-height: 20px; /* misma altura para cajas de texto y desplegables */
+  font-family: var(--fuente-texto);
   font-size: 15px;
+  font-weight: 400;
   color: var(--color-texto);
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde);
+  background: var(--color-campo);
+  border: 1px solid var(--color-borde-campo);
   border-radius: var(--radio);
 }
 
 .campo input:focus,
 .campo select:focus {
-  outline: 2px solid var(--color-acento);
+  outline: 1px solid var(--color-acento-texto);
   outline-offset: -1px;
+  border-color: var(--color-acento-texto);
 }
 
 .boton {
-  padding: 9px 16px;
-  font: inherit;
-  font-weight: 600;
-  color: #fff;
+  padding: 10px 18px;
+  font-family: var(--fuente-titulos);
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-texto-sobre-acento);
   background: var(--color-acento);
-  border: none;
+  border: 1px solid var(--color-acento);
   border-radius: var(--radio);
   cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.boton:hover:not(:disabled) {
+  background: var(--color-acento-hover);
+  border-color: var(--color-acento-hover);
+}
+
+.boton:focus-visible {
+  outline: 2px solid var(--color-acento-texto);
+  outline-offset: 3px;
 }
 
 .boton:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: default;
 }
 
@@ -194,7 +374,7 @@ a {
 
 .tabla th,
 .tabla td {
-  padding: 10px 14px;
+  padding: 11px 14px;
   text-align: left;
   border-bottom: 1px solid var(--color-borde);
 }
@@ -205,9 +385,20 @@ a {
   color: var(--color-texto-suave);
 }
 
+/* Caja que deja deslizar la tabla de lado si no cabe (en el móvil), sin mover la página entera */
+.tabla-scroll {
+  overflow-x: auto;
+}
+
+/* El total de cada factura en el listado, algo más marcado que el resto */
+.tabla .tabla__total {
+  font-weight: 600;
+}
+
 /* Las cantidades se alinean a la derecha para que las cifras cuadren */
 .tabla .numero {
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ===== Formulario de factura ===== */
@@ -215,6 +406,47 @@ a {
 .formulario--columna {
   flex-direction: column;
   align-items: stretch;
+  /* Estrecho para que los totales queden justo debajo de las líneas, sin un hueco en medio */
+  max-width: 760px;
+}
+
+/* Fila de campos que pueden mostrar un error debajo: se alinean por arriba,
+   así un error en un campo no descoloca a los de al lado */
+.fila-campos.fila-campos--arriba {
+  align-items: flex-start;
+}
+
+/* El botón Quitar baja lo que mide la etiqueta (16px de línea + 6px de hueco)
+   para quedar a la altura de las cajas */
+.fila-campos--arriba > .boton {
+  margin-top: 22px;
+}
+
+/* Error de un campo concreto, justo debajo de él */
+.campo__error {
+  font-weight: 400;
+  color: var(--color-error);
+}
+
+.campo [aria-invalid='true'] {
+  border-color: var(--color-error);
+  outline: 1px solid var(--color-error);
+  outline-offset: -1px;
+}
+
+/* Botón casi sin peso, para salir sin hacer nada (Cancelar) */
+.boton--texto {
+  color: var(--color-texto-suave);
+  background: transparent;
+  border-color: transparent;
+}
+
+.boton--texto:hover:not(:disabled) {
+  color: var(--color-texto);
+  background: transparent;
+  border-color: transparent;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 /* Varios campos y botones en la misma fila */
@@ -227,8 +459,11 @@ a {
 
 .subtitulo {
   margin: 8px 0 0;
-  font-size: 16px;
+  font-family: var(--fuente-titulos);
+  font-size: 22px;
   font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .campo .campo__cantidad {
@@ -238,9 +473,14 @@ a {
 
 /* Botón con menos peso visual: Añadir línea, Quitar, Cancelar */
 .boton--secundario {
-  color: var(--color-acento);
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde);
+  color: var(--color-texto);
+  background: transparent;
+  border: 1px solid var(--color-acento-borde);
+}
+
+.boton--secundario:hover:not(:disabled) {
+  background: var(--color-acento-suave);
+  border-color: var(--color-acento);
 }
 
 .boton--separado {
@@ -252,11 +492,15 @@ a {
   display: grid;
   grid-template-columns: auto auto;
   justify-content: end;
-  gap: 4px 24px;
+  align-items: baseline;
+  /* Sin hueco entre columnas (lo pone el padding del dt) para que la línea del total sea continua */
+  gap: 4px 0;
   margin: 8px 0 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .vista-previa dt {
+  padding-right: 32px;
   color: var(--color-texto-suave);
 }
 
@@ -265,8 +509,32 @@ a {
   text-align: right;
 }
 
-.vista-previa__total {
-  font-weight: 700;
+/* El total es lo más importante de la factura: grande, con una raya gruesa encima */
+.vista-previa .vista-previa__total-etiqueta,
+.vista-previa .vista-previa__total {
+  /* stretch: las dos celdas empiezan a la misma altura y la raya sale recta */
+  align-self: stretch;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 2px solid var(--color-texto);
+}
+
+/* La palabra "Total" se apoya abajo, a la altura de la cifra grande */
+.vista-previa .vista-previa__total-etiqueta {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 3px;
+  color: var(--color-texto);
+  font-weight: 600;
+}
+
+.vista-previa .vista-previa__total {
+  font-family: var(--fuente-titulos);
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--color-texto);
 }
 
 /* ===== Listado de facturas: filas que se pueden pinchar ===== */
@@ -275,9 +543,21 @@ a {
 }
 
 .fila-enlace:hover,
-.fila-enlace:focus-visible {
+.fila-enlace:focus-within {
   background: var(--color-acento-suave);
-  outline: none;
+}
+
+/* Número de factura en el listado: es el enlace al detalle */
+.tabla__numero-factura {
+  font-family: var(--fuente-mono);
+  font-size: 14px;
+  font-weight: 500;
+  text-underline-offset: 3px;
+}
+
+.tabla__numero-factura:focus-visible {
+  outline: 2px solid var(--color-acento-texto);
+  outline-offset: 2px;
 }
 
 /* ===== Detalle de factura ===== */
@@ -312,12 +592,25 @@ a.boton {
   margin: 0;
 }
 
-.factura__cliente {
+/* Emisor y cliente, uno al lado del otro */
+.factura__partes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 48px;
+}
+
+.factura__parte {
   min-width: 220px;
 }
 
-.factura__cliente .subtitulo {
+.factura__parte .subtitulo {
   margin: 0 0 4px;
+}
+
+/* "Faltan tus datos" dentro del bloque del emisor (no sale al imprimir) */
+.factura__falta {
+  color: var(--color-error);
+  font-weight: 600;
 }
 
 .factura__totales {
@@ -346,8 +639,122 @@ a.boton {
   font-size: 13px;
 }
 
+/* ===== Pantallas estrechas (móvil, tableta o el navegador con mucho zoom) ===== */
+@media (max-width: 860px) {
+  /* El menú deja de ir a la izquierda y pasa a ser una barra arriba */
+  .menu-lateral {
+    position: static;
+    width: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 24px;
+    padding: 12px 16px;
+    border-right: none;
+    border-bottom: 1px solid var(--color-borde);
+  }
+
+  .menu-lateral__marca {
+    padding: 0;
+    font-size: 24px;
+  }
+
+  .menu-lateral__logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .menu-lateral__submarca {
+    margin-top: 2px;
+  }
+
+  /* Los enlaces, en fila. Si no caben, se deslizan de lado dentro de la barra */
+  .menu-lateral nav {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .menu-lateral__lista {
+    flex-direction: row;
+  }
+
+  .menu-lateral__enlace {
+    border-left: none;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+
+  .menu-lateral__enlace.active {
+    border-bottom-color: var(--color-acento);
+  }
+
+  .contenido {
+    margin-left: 0;
+    padding: 24px 16px;
+    min-height: 0;
+  }
+
+  .titulo-pagina {
+    font-size: 34px;
+    margin-bottom: 20px;
+  }
+
+  /* Cada campo ocupa todo el ancho, uno debajo de otro */
+  .formulario {
+    padding: 16px;
+  }
+
+  .formulario .campo {
+    flex: 1 1 100%;
+  }
+
+  .campo input,
+  .campo select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* Menos la cantidad, que es corta y comparte fila con el botón Quitar */
+  .formulario .campo:has(.campo__cantidad) {
+    flex: 0 0 auto;
+  }
+
+  /* Las cifras no se parten en dos renglones: mejor deslizar la tabla */
+  .tabla-scroll .tabla .numero {
+    white-space: nowrap;
+  }
+
+  .factura {
+    padding: 20px 16px;
+  }
+
+  .factura__parte {
+    min-width: 0;
+  }
+
+  .vista-previa dt {
+    padding-right: 16px;
+  }
+}
+
 /* ===== Al imprimir ===== */
 @media print {
+  /* En papel: blanco y negro. Cambiando las variables, toda la factura
+     pasa a texto negro sobre fondo blanco, sin dorado ni fondos oscuros */
+  :root {
+    --color-fondo: #fff;
+    --color-superficie: #fff;
+    --color-campo: #fff;
+    --color-borde: #999;
+    --color-borde-campo: #999;
+    --color-texto: #000;
+    --color-texto-suave: #333;
+    --color-acento: #000;
+    --color-acento-texto: #000;
+    --color-acento-suave: transparent;
+    color-scheme: light;
+  }
+
   /* Fuera el menú lateral y los botones */
   .menu-lateral,
   .no-imprimir {
@@ -365,6 +772,7 @@ a.boton {
   body,
   :root {
     background: #fff;
+    color: #000;
   }
 
   /* En papel sobran el marco y el fondo de la tarjeta */

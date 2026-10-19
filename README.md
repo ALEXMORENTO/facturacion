@@ -4,6 +4,8 @@ Facturín es un programa para hacer facturas desde tu propio ordenador. Guardas 
 
 Está pensado para un autónomo o un negocio pequeño que trabaja en un solo ordenador, sin internet y sin varios usuarios.
 
+> 📄 **¿Prefieres leerlo más cómodo?** Abre [`docs/index.html`](docs/index.html) en el navegador: es una página con todo el proyecto resumido (qué hace, cómo arrancarlo, tecnologías, esquema, divisas, mejoras y flujo de Git).
+
 ## Qué se puede hacer
 
 - Añadir y ver clientes (nombre, DNI, email y dirección).
@@ -47,6 +49,19 @@ npm run instalar
 ```
 
 > Si usas `Facturin.bat` (ver abajo), no hace falta este paso: la primera vez instala solo lo que falte.
+
+### Tus datos de emisor
+
+Para que una factura sea válida tiene que llevar tus datos (quién la emite). Crea el archivo `backend/.env.local` con este contenido, cambiando los valores por los tuyos:
+
+```
+EMISOR_NOMBRE=Tu nombre o el de tu empresa
+EMISOR_NIF=12345678Z
+EMISOR_DIRECCION=Calle Ejemplo 1, 03001 Alicante
+EMISOR_EMAIL=tu@email.com
+```
+
+Este archivo no se sube a GitHub (son datos personales). Después de crearlo o cambiarlo, vuelve a arrancar Facturín. Si falta alguno de los tres primeros, el detalle de cada factura muestra un aviso.
 
 ## Cómo arrancarlo
 

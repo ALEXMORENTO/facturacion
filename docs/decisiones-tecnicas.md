@@ -1,306 +1,333 @@
 # Decisiones técnicas de Facturín
 
-Este documento explica, una por una, las tecnologías y decisiones del proyecto.
-Para cada una verás:
+Este documento explica, una por una, las tecnologías y las decisiones importantes del proyecto. Está pensado para alguien que empieza: cada apartado responde a cuatro preguntas.
 
 - **Qué es**, con una comparación de la vida real.
-- **Para qué la usamos** en Facturín.
+- **Para qué la usamos aquí**, en este proyecto concreto.
 - **Por qué la elegimos.**
 - **Qué alternativa descartamos** y por qué.
+
+Al final hay un esquema de cómo se conectan todas las piezas.
 
 ---
 
 ## 1. React
 
-**Qué es.** Una librería para construir las pantallas de una aplicación web.
-Funciona como un juego de piezas de LEGO: haces piezas pequeñas (un botón, un menú, una tabla)
-y las juntas para formar pantallas enteras. Si un dato cambia, React vuelve a pintar solo la pieza afectada.
+**Qué es.**
+Una librería de JavaScript para construir pantallas web a base de piezas (llamadas *componentes*).
+Es como montar con piezas de LEGO: haces una pieza "menú lateral", otra "tabla de facturas", otra "botón de imprimir", y luego las encajas para formar cada pantalla. Si cambias una pieza, cambia en todos los sitios donde la usas.
 
-**Para qué la usamos.** Todo lo que ves en el navegador está hecho con React:
-el menú lateral (`frontend/src/components/MenuLateral.jsx`) y las páginas de Inicio, Clientes,
-Productos y Facturas (`frontend/src/pages/`).
+**Para qué la usamos aquí.**
+Para todas las pantallas que ves en el navegador: Inicio, Clientes, Productos, Facturas y Ver factura. Están en `frontend/src/pages/`, y las piezas reutilizables (como el menú lateral) en `frontend/src/components/`.
 
 **Por qué la elegimos.**
-- Es la librería más usada: hay muchísimos tutoriales, ejemplos y respuestas a dudas.
-- Las piezas se reutilizan: el menú se escribe una vez y aparece en todas las pantallas.
-- Actualiza la pantalla sola cuando cambian los datos (por ejemplo, el total de una factura).
+- Es la herramienta más usada para hacer pantallas web, así que hay muchísima documentación, tutoriales y respuestas a casi cualquier duda.
+- Cuando los datos cambian (por ejemplo, añades un cliente), React actualiza la pantalla solo, sin que tengas que tocar la página a mano.
+- Lo que aprendes con React te sirve para muchos otros proyectos.
 
-**Alternativa descartada: HTML y JavaScript "a mano".** Para una página sencilla vale,
-pero con varias pantallas, formularios y listas habría que actualizar cada trozo de la página
-manualmente, y el código se vuelve difícil de mantener. También existen Vue o Angular,
-pero React tiene más comunidad y material para aprender.
+**Qué alternativa descartamos.**
+- **HTML y JavaScript "a pelo" (sin librería):** para una página sencilla vale, pero con seis pantallas, formularios y listas que cambian, el código se vuelve un lío enseguida.
+- **Vue o Angular:** son buenas opciones, pero React tiene más comunidad y más ejemplos, lo que ayuda mucho al aprender.
 
 ---
 
 ## 2. Vite
 
-**Qué es.** La herramienta que prepara y sirve el frontend mientras programamos.
-Es como el ayudante de cocina que tiene los ingredientes listos: tú cambias una línea de código
-y Vite actualiza el navegador al instante, sin que tengas que recargar.
+**Qué es.**
+Una herramienta que prepara y sirve el frontend mientras lo programas.
+Es como el horno de una cocina: tú escribes la receta (el código React) y Vite la "cocina" para que el navegador la entienda. Además, es un horno muy rápido: en cuanto guardas un cambio, la página se actualiza sola en el navegador.
 
-**Para qué la usamos.**
-- Arranca el frontend en `http://localhost:5173` (`npm run dev` dentro de `frontend/`).
-- Hace de **intermediario (proxy)**: cuando el navegador pide algo que empieza por `/api`,
-  Vite se lo pasa al backend en el puerto 3001. Está configurado en `frontend/vite.config.js`.
-  Así el frontend no necesita saber en qué puerto vive el backend.
+**Para qué la usamos aquí.**
+- Arranca el frontend en `http://localhost:5173` con `npm run dev` dentro de `frontend/`.
+- Hace de **intermediario** (proxy): cuando el navegador pide algo que empieza por `/api`, Vite se lo pasa al backend (puerto 3001). Está configurado en `frontend/vite.config.js`.
 
-**Por qué la elegimos.** Arranca en un segundo, se configura con muy pocas líneas
-y es la forma recomendada hoy para empezar un proyecto de React.
+**Por qué la elegimos.**
+- Arranca en un momento y recarga los cambios casi al instante.
+- Es la forma recomendada hoy para empezar un proyecto de React.
+- El proxy nos ahorra problemas: el navegador cree que todo viene del mismo sitio y no hay que escribir el puerto del backend en el código.
 
-**Alternativa descartada: Create React App.** Era la opción clásica, pero está abandonada
-y es mucho más lenta. Next.js también se descartó: está pensado para webs publicadas en internet
-y añade conceptos (renderizado en servidor, etc.) que Facturín, que funciona solo en local, no necesita.
+**Qué alternativa descartamos.**
+- **Create React App:** era la forma clásica de empezar con React, pero es mucho más lenta y ya no se mantiene.
+- **Next.js:** es muy potente, pero mezcla frontend y backend y añade conceptos que no necesitamos para un programa local.
 
 ---
 
 ## 3. React Router
 
-**Qué es.** Una librería que decide qué pantalla mostrar según la dirección (URL) del navegador.
-Es como el cartel de un edificio: si vas a `/clientes` te manda a la sala de Clientes;
-si vas a `/facturas/7`, a la factura número 7.
+**Qué es.**
+Una librería que decide qué pantalla se ve según la dirección (URL) del navegador.
+Es como el recepcionista de un edificio: miras el cartel (`/clientes`, `/facturas/7`) y te manda a la sala correcta, sin salir del edificio.
 
-**Para qué la usamos.** En `frontend/src/App.jsx` se define qué página corresponde a cada URL:
-`/`, `/facturas`, `/facturas/:id`, `/clientes`, `/productos`, y una página de "no encontrada"
-para cualquier otra dirección. El menú lateral se queda fijo y solo cambia el contenido.
+**Para qué la usamos aquí.**
+En `frontend/src/App.jsx` está la lista de rutas:
+
+| Dirección | Pantalla |
+|---|---|
+| `/` | Inicio |
+| `/clientes` | Clientes |
+| `/productos` | Productos |
+| `/facturas` | Facturas |
+| `/facturas/:id` | Ver una factura concreta |
+| cualquier otra | Página no encontrada |
+
+El menú lateral se queda fijo y solo cambia la parte central.
 
 **Por qué la elegimos.**
-- Cada pantalla tiene su propia URL: se puede usar el botón "Atrás" del navegador
-  o guardar en favoritos una factura concreta.
-- Es la librería de rutas estándar en React.
+- Es la librería de rutas más usada con React.
+- Cada pantalla tiene su propia dirección, así que funcionan los botones de "atrás" y "adelante" del navegador, y puedes guardar en favoritos una factura concreta.
+- Cambiar de pantalla es instantáneo, porque no se recarga la página entera.
 
-**Alternativa descartada: cambiar de pantalla con una variable** ("pantalla actual = clientes").
-Es más simple al principio, pero la URL no cambia, el botón "Atrás" no funciona
-y al recargar siempre vuelves al inicio.
+**Qué alternativa descartamos.**
+- **Hacerlo a mano con un `if` que mire una variable "pantalla actual":** funciona al principio, pero perderíamos las direcciones propias, el botón "atrás" y los favoritos.
 
 ---
 
 ## 4. Node.js 24
 
-**Qué es.** Un programa que permite ejecutar JavaScript fuera del navegador, en el ordenador.
-Normalmente JavaScript solo "vive" dentro del navegador; Node.js es como darle una casa propia
-para que pueda trabajar por su cuenta: leer archivos, guardar datos o hablar con internet.
+**Qué es.**
+Un programa que permite ejecutar JavaScript fuera del navegador, directamente en tu ordenador.
+Es como sacar a un cocinero de un restaurante (el navegador) y dejarle cocinar en tu casa: el mismo cocinero, el mismo idioma, pero ahora puede hacer cosas que en el restaurante no le dejaban, como leer y guardar archivos.
 
-**Para qué la usamos.** Es el motor del backend. También lo necesitan las herramientas
-de desarrollo (Vite, npm, concurrently).
+**Para qué la usamos aquí.**
+- Para ejecutar el backend (`backend/src/server.js`).
+- Para instalar las dependencias con `npm`, que viene incluido con Node.
+- Para hacer funcionar Vite, que también es un programa de Node.
 
-**Por qué la elegimos.**
-- Usamos **el mismo lenguaje (JavaScript)** en el frontend y en el backend: solo hay que aprender uno.
-- La **versión 24** trae de serie cosas que antes requerían instalar paquetes extra:
-  la base de datos SQLite (`node:sqlite`), `fetch` para llamar a otras webs
-  y `node --watch`, que reinicia el backend solo cuando cambias el código.
+**Por qué la elegimos (y por qué la versión 24).**
+- Es JavaScript, el mismo lenguaje que el frontend. Así solo hay que aprender **un** lenguaje para todo el proyecto.
+- La versión 24 trae incluido el módulo `node:sqlite` para usar la base de datos sin instalar nada más (ver apartado 6). En versiones antiguas no existe.
+- Con `node --watch` el backend se reinicia solo cada vez que guardas un cambio.
 
-**Alternativa descartada: Python o PHP para el backend.** Funcionarían igual de bien,
-pero obligarían a aprender un segundo lenguaje. Y una versión antigua de Node (por ejemplo la 20)
-no trae SQLite incorporado.
+**Qué alternativa descartamos.**
+- **Python (con Flask o Django) o PHP:** son buenas opciones, pero habría que aprender un segundo lenguaje además de JavaScript.
+- **Versiones antiguas de Node (18, 20):** no traen `node:sqlite` de serie y nos obligarían a instalar una librería extra para la base de datos.
 
 ---
 
 ## 5. Express
 
-**Qué es.** Una librería para crear servidores web con Node.js.
-Es como el camarero de un restaurante: recibe los pedidos ("dame los clientes",
-"crea esta factura"), los lleva a la cocina y devuelve el plato (la respuesta).
+**Qué es.**
+Una librería para Node que sirve para crear un servidor web: un programa que recibe peticiones y devuelve respuestas.
+Es como el camarero de un restaurante: recibe el pedido del cliente ("dame la lista de facturas"), lo lleva a la cocina, comprueba que todo está bien y vuelve con el plato.
 
-**Para qué la usamos.** En `backend/src/server.js` se crea el servidor en el puerto 3001
-y se reparten las peticiones por temas en `backend/src/routes/`:
-`/api/clientes`, `/api/productos`, `/api/facturas` y `/api/divisas`.
-También devuelve los errores en español.
+**Para qué la usamos aquí.**
+Para el backend, que escucha en `http://localhost:3001`. Cada tipo de dato tiene su archivo de rutas en `backend/src/routes/`:
+
+| Ruta | Qué hace |
+|---|---|
+| `/api/clientes` | Ver y añadir clientes |
+| `/api/productos` | Ver y añadir productos |
+| `/api/facturas` | Ver y crear facturas (aquí se calculan el IVA, los totales y el número) |
+| `/api/divisas` | Pasar el total a dólares, libras y francos suizos |
+| `/api/salud` | Responde "estoy encendido" |
+
+También traduce al español los errores, por ejemplo cuando llega un JSON mal escrito.
 
 **Por qué la elegimos.**
-- Es el servidor más conocido para Node: muy sencillo y con muchísima documentación.
-- Con pocas líneas tienes una API funcionando, sin tener que aprender un gran "framework".
+- Es la librería de servidor más conocida de Node: hay ejemplos para casi todo.
+- Es sencilla: con pocas líneas tienes una ruta funcionando.
+- No impone una forma rígida de organizar el código, lo que viene bien en un proyecto pequeño.
 
-**Alternativa descartada: usar solo el módulo `http` de Node.** Se puede, pero habría que escribir
-a mano cosas que Express ya resuelve (leer el JSON de las peticiones, separar rutas, gestionar errores).
-Frameworks más grandes como NestJS se descartaron por ser demasiado complejos para este proyecto.
+**Qué alternativa descartamos.**
+- **El servidor que trae Node de serie (`node:http`), sin librería:** se puede, pero hay que escribir a mano cosas que Express ya resuelve (leer el JSON, separar las rutas, gestionar errores).
+- **Fastify o NestJS:** son más modernos o más completos, pero tienen menos ejemplos para principiantes (Fastify) o son demasiado complejos para este tamaño de proyecto (NestJS).
 
 ---
 
-## 6. SQLite (`node:sqlite`)
+## 6. SQLite con `node:sqlite`
 
-**Qué es.** Una base de datos que cabe en **un solo archivo**.
-Es como un archivador de oficina con cajones (tablas): uno para clientes, otro para productos,
-otro para facturas y otro para las líneas de cada factura.
+**Qué es.**
+SQLite es una base de datos que guarda toda la información en **un único archivo**. `node:sqlite` es la pieza que viene dentro de Node para leer y escribir en ese archivo.
+Es como un archivador con cajones (tablas: clientes, productos, facturas, líneas de factura), pero que cabe entero en una carpeta y puedes copiarlo como cualquier otro archivo.
 
-**Para qué la usamos.** Todo se guarda en `backend/facturacion.db`.
-Las tablas se crean en `backend/src/db.js` la primera vez que arranca el backend.
-Usamos `node:sqlite`, el módulo de SQLite que ya viene **incluido en Node.js 24**.
+**Para qué la usamos aquí.**
+Para guardar clientes, productos, facturas y las líneas de cada factura. El archivo es `backend/facturacion.db` y se crea solo la primera vez que arrancas el backend (lo hace `backend/src/db.js`, que también crea las tablas).
+
+Dos detalles importantes:
+- Activamos las **claves foráneas**, para que la base de datos no deje, por ejemplo, crear una factura de un cliente que no existe.
+- Las facturas se guardan con una **transacción**: o se guarda la factura con todas sus líneas, o no se guarda nada.
 
 **Por qué la elegimos.**
-- **No hay que instalar nada**: ni un programa de base de datos aparte, ni un paquete extra.
-- Para hacer una copia de seguridad basta con copiar el archivo `facturacion.db`.
-- Facturín lo usa una sola persona en su ordenador, y para eso SQLite es más que suficiente.
-- Permite relacionar datos (un cliente tiene muchas facturas) y comprueba que no se rompan esas relaciones.
+- No hay que instalar ni configurar ningún programa aparte: es un archivo.
+- Hacer una copia de seguridad es tan fácil como copiar `facturacion.db`.
+- Es perfecta para un programa que usa una sola persona en un solo ordenador.
+- `node:sqlite` viene incluido en Node 24, así que no hace falta ninguna librería extra.
 
-**Alternativa descartada: PostgreSQL o MySQL.** Son bases de datos potentes pensadas para
-muchos usuarios a la vez, pero hay que instalarlas, arrancarlas y configurarlas aparte.
-También descartamos el paquete `better-sqlite3`: hace lo mismo, pero hay que instalarlo
-y a veces da problemas al compilarse en Windows. Guardar todo en un archivo JSON tampoco
-valía: no comprueba relaciones y es fácil que se corrompa.
+**Qué alternativa descartamos.**
+- **PostgreSQL o MySQL:** son bases de datos muy potentes, pero funcionan como un programa aparte que hay que instalar, arrancar y configurar. Tiene sentido cuando muchas personas usan la aplicación a la vez por internet, que no es nuestro caso.
+- **La librería `better-sqlite3`:** hace lo mismo que `node:sqlite`, pero es una dependencia más que instalar y que a veces da problemas al instalarse en Windows.
+- **Guardar todo en archivos JSON:** parece más simple, pero no protege los datos (no hay transacciones ni claves foráneas) y buscar o relacionar datos se complica mucho.
 
 ---
 
 ## 7. Guardar el dinero en céntimos
 
-**Qué es.** En lugar de guardar `12,50 €` como número con decimales, guardamos `1250` céntimos
-(un número entero). Es como contar monedas en vez de pesar la cartera: cada céntimo es exacto.
+**Qué es.**
+Una regla del proyecto: todos los importes se guardan como **números enteros de céntimos**. Por ejemplo, 12,50 € se guarda como `1250`.
+Es como contar monedas de un céntimo en vez de billetes partidos: nunca tienes "medio céntimo" ni "un poquito menos de un céntimo", siempre un número exacto.
 
-**Para qué lo usamos.** En la base de datos todas las columnas de dinero son enteros y terminan en
-`_centimos` (`precio_centimos`, `total_centimos`...). Solo al mostrarlo en pantalla se convierte a euros,
-con las funciones de `frontend/src/utils/dinero.js` (`1250` → `"12,50 €"`).
+**Para qué la usamos aquí.**
+- En la base de datos, los campos de dinero se llaman `precio_centimos`, `base_centimos`, `iva_centimos` y `total_centimos`, y son números enteros.
+- El frontend solo convierte a euros para **mostrarlos** (`1250` → "12,50 €") y, al revés, cuando escribes un precio. Lo hace `frontend/src/utils/dinero.js`.
+- Incluso al pasar a otras divisas, el resultado se redondea al céntimo para seguir con enteros.
 
-**Por qué lo elegimos.** Los ordenadores no saben guardar exactamente algunos decimales.
-Por ejemplo, en JavaScript `0.1 + 0.2` da `0.30000000000000004`. Con muchas facturas,
-esos pequeños errores acaban descuadrando céntimos en el IVA o en los totales.
-Con números enteros, las sumas siempre son exactas.
+**Por qué la elegimos.**
+Los ordenadores cometen pequeños errores al sumar números con decimales. Por ejemplo, en JavaScript `0.1 + 0.2` no da `0.3`, sino `0.30000000000000004`. En una factura, esos errores acaban en un céntimo de más o de menos en el total. Con números enteros esos errores no existen y las cuentas siempre cuadran.
 
-**Alternativa descartada: guardar euros con decimales** (`12.5`). Es más intuitivo,
-pero provoca esos errores de redondeo, y en una factura un céntimo de diferencia es un error.
-
----
-
-## 8. Los cálculos se hacen en el backend
-
-**Qué es.** El IVA, la base y el total de cada factura los calcula el servidor (backend),
-nunca la pantalla (frontend). Es como en una tienda: el cliente puede ver los precios,
-pero quien cobra y hace la cuenta es la caja registradora, no el cliente.
-
-**Para qué lo usamos.** El frontend envía qué productos y qué cantidades lleva la factura.
-El backend busca los precios, calcula base, IVA y total, y los guarda.
-El frontend solo muestra el resultado.
-
-**Por qué lo elegimos.**
-- **Una sola fuente de verdad**: el cálculo está en un único sitio, así que no puede haber
-  dos resultados distintos.
-- **Seguridad**: lo que llega desde el navegador se puede manipular; el backend no se fía
-  y lo comprueba todo (ver `backend/src/utils/validaciones.js`).
-- Si mañana cambia cómo se calcula algo, se cambia en un solo lugar.
-
-**Alternativa descartada: calcular en el frontend y enviar el total ya hecho.**
-Es más rápido de programar, pero el backend tendría que creerse cualquier número que le llegue.
+**Qué alternativa descartamos.**
+- **Guardar los euros con decimales (`12.50`):** es lo primero que se le ocurre a cualquiera, pero tiene justo el problema de redondeo explicado arriba.
+- **Usar una librería especial para decimales exactos:** funcionaría, pero añade complejidad que no necesitamos. Los céntimos enteros resuelven lo mismo sin instalar nada.
 
 ---
 
-## 9. Git + GitHub, con `main`, `develop`, ramas y PRs
+## 8. Los cálculos los hace el backend
 
 **Qué es.**
-- **Git** guarda el historial de todos los cambios del código. Es como el "control de cambios"
-  de Word, pero para todo el proyecto: puedes ver qué cambió, cuándo y volver atrás.
-- **GitHub** es la web donde se guarda una copia del proyecto en internet.
-- Una **rama** es una copia paralela del código donde trabajar sin estropear la versión buena.
-  Es como hacer un borrador en una hoja aparte antes de pasarlo a limpio.
-- Un **PR (Pull Request)** es la petición de "pasa mi borrador a limpio": en GitHub se revisan
-  los cambios antes de unirlos.
+Otra regla del proyecto: el IVA, la base, el total y el número de factura los calcula **siempre el backend**. El frontend solo los muestra.
+Es como en una tienda: el cliente te dice qué quiere y cuántos, pero el precio lo pone la caja registradora, no el cliente.
 
-**Para qué lo usamos.**
-- `main` = **producción**: la versión que funciona y se usa.
-- `develop` = **desarrollo**: donde se van juntando las novedades antes de pasarlas a `main`.
-- Cada tarea va en su propia rama que sale de `develop`: `feature/...` para funciones nuevas,
-  `chore/...` para tareas de mantenimiento, `docs/...` para documentación (como esta).
-- Al terminar, se abre un PR hacia `develop`; cuando `develop` está estable, otro PR de `develop` a `main`.
+**Para qué la usamos aquí.**
+Al crear una factura, el frontend solo envía el cliente, la fecha y qué productos y cuántos. El backend (`backend/src/routes/facturas.js`):
 
-**Por qué lo elegimos.**
-- Si algo sale mal, se puede volver a una versión anterior.
-- `main` nunca se rompe porque nadie trabaja directamente en ella.
-- Cada PR deja por escrito qué se cambió y por qué.
+1. Busca cada producto en la base de datos y copia su nombre, precio e IVA. **Nunca usa un precio que venga del frontend.**
+2. Calcula la base de cada línea (precio × cantidad).
+3. Agrupa las líneas por % de IVA y calcula el IVA de cada grupo, redondeado al céntimo.
+4. Suma la base y el IVA para sacar el total.
+5. Pone el número automático del año (`2026-0001`, `2026-0002`…).
 
-**Alternativa descartada: copiar carpetas** (`facturacion-v2`, `facturacion-final-bueno`...).
-Es lo que hace mucha gente al empezar, pero es imposible saber qué cambió entre copias.
-También descartamos trabajar todo directamente en `main`: más sencillo, pero cualquier error
-llega en seguida a la versión que se usa.
+**Por qué la elegimos.**
+- **Seguridad y fiabilidad:** lo que se ejecuta en el navegador se puede manipular. Si el frontend mandara el total, alguien podría cambiarlo. El backend no se fía de nada que le llegue de fuera.
+- **Un solo sitio:** las reglas de cálculo están en un único archivo. Si mañana cambia algo del IVA, se cambia en un sitio y vale para todo.
+- **Coherencia:** el número de factura tiene que ser único y seguido. Solo quien guarda en la base de datos puede garantizarlo.
+
+**Qué alternativa descartamos.**
+- **Calcular en el frontend y mandar el total ya hecho:** es más rápido de programar al principio, pero es inseguro y repartiría las reglas entre dos sitios. Lo descartamos.
+
+---
+
+## 9. Git + GitHub con `main`, `develop`, ramas y Pull Requests
+
+**Qué es.**
+- **Git** es un programa que guarda el historial de todos los cambios del proyecto. Cada vez que guardas un paso (un *commit*), queda una "foto" a la que puedes volver.
+- **GitHub** es una web donde se guarda una copia del proyecto con todo su historial.
+- **Una rama** es una copia paralela del proyecto donde puedes trabajar sin estropear lo demás.
+- **Un Pull Request (PR)** es una petición para unir los cambios de una rama con otra, con la posibilidad de revisarlos antes.
+
+La analogía: Git es como el historial de versiones de un documento, pero mucho más potente. Las ramas son borradores: escribes en tu borrador, y cuando está bien, pides (con un PR) que se pase a limpio al documento oficial.
+
+**Para qué la usamos aquí.**
+
+| Rama | Para qué sirve |
+|---|---|
+| `main` | Producción: la versión buena y terminada. |
+| `develop` | Desarrollo: donde se van juntando las tareas acabadas. |
+| `feature/...` | Una funcionalidad nueva (ej.: `feature/divisa`). |
+| `chore/...` | Mantenimiento que no cambia lo que hace el programa. |
+| `docs/...` | Cambios solo en la documentación (como este archivo). |
+
+Cada tarea sale de `develop` en su propia rama, se sube a GitHub, y entra en `develop` mediante un PR. Cuando `develop` está estable, otro PR la pasa a `main`. Nunca se trabaja directamente en `main` ni en `develop`.
+
+**Por qué la elegimos.**
+- Si algo se rompe, puedes volver atrás a una versión que funcionaba.
+- Cada tarea va separada: si una sale mal, no estropea las demás.
+- El PR obliga a mirar los cambios antes de juntarlos, lo que evita sustos.
+- GitHub sirve además de copia de seguridad del código.
+- Es la forma de trabajar que se usa en casi cualquier empresa, así que es buena práctica aprenderla.
+
+**Qué alternativa descartamos.**
+- **Trabajar sin Git, copiando carpetas (`facturacion-v2`, `facturacion-final`…):** es fácil perderse y no sabes qué cambió entre una y otra.
+- **Usar Git con una sola rama `main` para todo:** es más simple, pero cualquier cambio a medias quedaría directamente en la versión "buena".
 
 ---
 
 ## 10. `concurrently` + `Facturin.bat`
 
 **Qué es.**
-- **concurrently** es una herramienta que arranca varios programas a la vez en una sola ventana.
-  Es como un mando a distancia universal que enciende la tele y el equipo de sonido con un botón.
-- **Facturin.bat** es un archivo de Windows que se abre con doble clic y arranca todo.
+- **`concurrently`** es una herramienta que ejecuta varios comandos a la vez en la misma ventana.
+- **`Facturin.bat`** es un archivo de Windows que, con un doble clic, ejecuta una lista de órdenes.
 
-**Para qué lo usamos.**
-- En el `package.json` de la raíz, el comando `npm run dev` usa concurrently para arrancar
-  a la vez el backend (en azul) y el frontend (en verde), y abre el navegador.
-- `Facturin.bat` comprueba que Node.js está instalado, instala las dependencias la primera vez
-  y lanza `npm run dev`. Para cerrar Facturín basta con cerrar la ventana.
+La analogía: Facturín necesita dos motores encendidos a la vez (el backend y el frontend). `concurrently` es como una llave que arranca los dos motores de golpe. `Facturin.bat` es el botón de arranque del coche: no tienes que saber nada de la llave, solo pulsar.
 
-**Por qué lo elegimos.** Sin esto habría que abrir dos terminales, entrar en dos carpetas
-y escribir dos comandos cada vez. Con el `.bat`, quien use Facturín no necesita saber nada de terminales.
+**Para qué la usamos aquí.**
+- En el `package.json` de la raíz, el comando `npm run dev` usa `concurrently` para arrancar backend y frontend juntos. Cada uno sale con su etiqueta de color: `[backend]` en azul y `[frontend]` en verde. El navegador se abre solo.
+- `Facturin.bat` comprueba que Node.js está instalado, la primera vez instala lo que falte, y luego lanza `npm run dev`. Para pararlo, basta con cerrar la ventana.
 
-**Alternativa descartada: arrancar cada parte a mano en dos terminales.** Funciona,
-pero es incómodo y fácil de olvidar. También descartamos convertirlo en una app de escritorio
-(con Electron, por ejemplo): sería más "bonito", pero añade mucha complejidad para lo que necesitamos.
+**Por qué la elegimos.**
+- Sin esto, habría que abrir **dos terminales** y escribir un comando en cada una, cada vez que quieras usar el programa.
+- Con `Facturin.bat`, cualquier persona puede arrancar Facturín sin abrir una terminal ni saber programar.
+- `concurrently` funciona igual en Windows, Mac y Linux.
+
+**Qué alternativa descartamos.**
+- **Arrancar a mano con dos terminales:** sigue siendo posible (está explicado en el README), pero es incómodo para el día a día.
+- **Usar `&` en el comando para lanzar los dos a la vez:** funciona distinto en Windows que en Mac o Linux, y al pulsar `Ctrl + C` no siempre se paran los dos.
+- **Docker:** sirve para empaquetar aplicaciones, pero hay que instalarlo y aprenderlo. Es demasiado para un programa local.
 
 ---
 
-## 11. API Frankfurter
+## 11. La API Frankfurter
 
-**Qué es.** Un servicio gratuito en internet que da los **tipos de cambio** del euro
-publicados por el Banco Central Europeo. Es como mirar la tabla de cambio de divisas
-de la ventanilla del banco, pero preguntándosela a un ordenador.
+**Qué es.**
+Un servicio gratuito de internet que te dice cuánto vale el euro en otras monedas. Los datos vienen del Banco Central Europeo y se actualizan cada día laborable. Una **API** es una "ventanilla" a la que un programa le hace preguntas y recibe respuestas.
+Es como llamar al banco para preguntar el cambio del día: tú preguntas "¿a cuánto está el dólar?" y te contestan con el número.
 
-**Para qué la usamos.** Para mostrar el total de una factura también en dólares (USD),
-libras (GBP) y francos suizos (CHF). Lo hace el backend en `backend/src/routes/divisas.js`:
-pide los tipos de cambio a Frankfurter, convierte la cantidad (redondeando al céntimo,
-para seguir usando enteros) y se la devuelve al frontend.
+**Para qué la usamos aquí.**
+En la pantalla **Ver factura**, debajo del total, se muestra cuánto sería ese total en dólares (USD), libras (GBP) y francos suizos (CHF), con la fecha del cambio.
 
-Si no hay internet o Frankfurter tarda más de 5 segundos, el backend responde con un error claro
-y el resto de Facturín sigue funcionando con normalidad.
+El camino es este: el frontend pide `/api/divisas?centimos=…` a **nuestro** backend (`backend/src/routes/divisas.js`), y es el backend quien pregunta a Frankfurter, hace la conversión (redondeando a céntimos) y devuelve el resultado.
+
+Si no hay internet o Frankfurter tarda más de 5 segundos, el backend responde con un mensaje de error en español y el resto de la factura se sigue viendo con normalidad. Es la única parte de Facturín que necesita internet.
 
 **Por qué la elegimos.**
-- Es **gratuita y no pide registro ni clave**: no hay contraseñas que guardar ni que se puedan filtrar.
-- Los datos vienen del Banco Central Europeo, una fuente oficial y fiable.
-- La llamamos **desde el backend** (no desde el navegador), siguiendo la regla de que
-  el frontend solo habla con nuestro propio `/api`.
+- Es gratuita y **no necesita registrarse ni usar una clave** (contraseña de acceso).
+- Los datos son oficiales, del Banco Central Europeo.
+- Es muy sencilla de usar: una sola dirección web devuelve todo lo que necesitamos.
+- La llamamos desde el backend, y no desde el navegador, para respetar la regla de que el frontend solo habla con `/api` y para que la conversión siga las mismas reglas de céntimos que el resto del programa.
 
-**Alternativa descartada: otras APIs de divisas** (como Open Exchange Rates o Fixer).
-La mayoría piden registrarse y usar una clave, y su versión gratuita tiene límites.
-También descartamos escribir los tipos de cambio a mano: se quedarían desactualizados en seguida.
+**Qué alternativa descartamos.**
+- **Otras APIs de cambio de divisa (de pago o con clave):** habría que registrarse y guardar una clave secreta, algo innecesario para este uso.
+- **Escribir los tipos de cambio a mano en el código:** serían falsos en cuanto cambiara el mercado al día siguiente.
+- **Llamar a Frankfurter directamente desde el frontend:** rompería la regla de que el frontend solo habla con nuestro backend.
 
 ---
 
 ## Cómo se conectan las piezas
 
+```text
+ ┌──────────────────────────┐
+ │        NAVEGADOR         │   Lo que ves: Chrome, Edge, Firefox…
+ └────────────┬─────────────┘
+              │  abres http://localhost:5173
+              ▼
+ ┌──────────────────────────┐
+ │  FRONTEND  (puerto 5173) │   React + React Router, servido por Vite
+ │  Pantallas: Inicio,      │   Solo muestra datos y recoge lo que escribes.
+ │  Clientes, Productos,    │   Pasa céntimos a euros para enseñarlos.
+ │  Facturas, Ver factura   │
+ └────────────┬─────────────┘
+              │  peticiones a /api/...
+              │  (el proxy de Vite las reenvía)
+              ▼
+ ┌──────────────────────────┐
+ │  BACKEND   (puerto 3001) │   Node.js 24 + Express
+ │  Comprueba los datos,    │   Calcula IVA, totales y número de factura.
+ │  calcula y guarda        │   Todo el dinero en céntimos enteros.
+ └──────┬────────────┬──────┘
+        │            │
+        │ lee y      │ pregunta el cambio del día
+        │ escribe    │ (solo para Ver factura, necesita internet)
+        ▼            ▼
+ ┌──────────────┐  ┌──────────────────────────┐
+ │ BASE DE DATOS│  │  API EXTERNA: Frankfurter │
+ │ SQLite       │  │  Tipos de cambio del      │
+ │ facturacion  │  │  Banco Central Europeo    │
+ │ .db          │  │  (USD, GBP, CHF)          │
+ └──────────────┘  └──────────────────────────┘
 ```
-            ┌───────────────────────────┐
-            │        NAVEGADOR          │  Lo que ves y donde haces clic
-            └─────────────┬─────────────┘
-                          │  http://localhost:5173
-                          ▼
-            ┌───────────────────────────┐
-            │  FRONTEND  (React + Vite) │  Pantallas y formularios.
-            │  React Router elige la    │  No calcula totales ni toca
-            │  pantalla según la URL    │  la base de datos.
-            └─────────────┬─────────────┘
-                          │  Peticiones a /api/...
-                          │  (el proxy de Vite las reenvía al puerto 3001)
-                          ▼
-            ┌───────────────────────────┐
-            │ BACKEND (Node.js+Express) │  Comprueba los datos,
-            │  puerto 3001              │  calcula IVA y totales
-            │                           │  (siempre en céntimos)
-            └──────┬─────────────┬──────┘
-                   │             │
-     Lee y guarda  │             │  Pide tipos de cambio
-                   ▼             ▼  (solo para /api/divisas)
-   ┌────────────────────────┐  ┌──────────────────────────┐
-   │ BASE DE DATOS          │  │ API EXTERNA: Frankfurter │
-   │ SQLite (node:sqlite)   │  │ (internet, Banco Central │
-   │ backend/facturacion.db │  │  Europeo)                │
-   └────────────────────────┘  └──────────────────────────┘
-```
 
-**Ejemplo: crear una factura.**
+Las tres reglas que hay que recordar:
 
-1. En el navegador eliges un cliente y añades productos.
-2. El frontend envía esos datos a `/api/facturas`.
-3. Vite reenvía la petición al backend.
-4. El backend comprueba los datos, busca los precios, calcula base, IVA y total en céntimos
-   y lo guarda todo en SQLite.
-5. El backend responde con la factura ya calculada.
-6. El frontend la muestra, convirtiendo los céntimos a euros (`1250` → `12,50 €`).
+1. **El frontend nunca toca la base de datos ni la API externa.** Solo habla con el backend a través de `/api`.
+2. **El backend es el único que calcula y el único que guarda.** Así todas las comprobaciones están en un solo sitio.
+3. **El dinero viaja siempre en céntimos enteros.** Solo se convierte a euros en el último momento, para mostrarlo en pantalla.
 
-**Y para arrancarlo todo:** doble clic en `Facturin.bat` → `npm run dev` →
-concurrently enciende el backend y el frontend → se abre el navegador.
-
-**Y para guardar los cambios del código:** rama `feature/...` → PR a `develop` → PR a `main` (en GitHub).
+Y para arrancarlo todo: doble clic en `Facturin.bat` (o `npm run dev` en la raíz), que gracias a `concurrently` enciende el backend y el frontend a la vez.

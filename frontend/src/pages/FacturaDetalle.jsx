@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { obtenerDivisas, obtenerFactura } from '../api.js'
+import { Link, useLocation, useParams } from 'react-router-dom'
+import { obtenerDivisas, obtenerEmpresa, obtenerFactura } from '../api.js'
 import { centimosADivisa, centimosAEuros } from '../utils/dinero.js'
 import { formatearFecha } from '../utils/fechas.js'
 
@@ -10,6 +10,31 @@ function FacturaDetalle() {
   const [factura, setFactura] = useState(null)
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
+
+  // Si venimos de emitirla, la página de Facturas nos lo dice con "recienEmitida"
+  const recienEmitida = useLocation().state?.recienEmitida === true
+
+  // Tus datos como emisor. Si no llegan, la factura se ve igual y avisamos de que faltan
+  const [empresa, setEmpresa] = useState(null)
+
+  useEffect(() => {
+    obtenerEmpresa()
+      .then(setEmpresa)
+      .catch(() => setEmpresa({ nombre: '', nif: '', direccion: '', email: '' }))
+  }, [])
+
+  const faltanDatosEmisor = empresa && (!empresa.nombre || !empresa.nif || !empresa.direccion)
+
+  // Sin tus datos de emisor la factura impresa no es válida: avisamos antes de imprimir
+  function imprimir() {
+    if (
+      faltanDatosEmisor &&
+      !window.confirm('Faltan tus datos de emisor y la factura no será válida. ¿Imprimir de todos modos?')
+    ) {
+      return
+    }
+    window.print()
+  }
 
   // Pedimos la factura al abrir la página y cada vez que cambie el id de la URL
   useEffect(() => {
@@ -44,7 +69,7 @@ function FacturaDetalle() {
           ← Volver a facturas
         </Link>
         {factura && (
-          <button className="boton" onClick={() => window.print()}>
+          <button className="boton" onClick={imprimir}>
             Imprimir
           </button>
         )}
@@ -52,7 +77,25 @@ function FacturaDetalle() {
 
       {cargando && <p className="texto-suave">Cargando...</p>}
 
-      {error && <p className="mensaje-error">{error}</p>}
+      {error && (
+        <p className="mensaje-error" role="alert">
+          {error}
+        </p>
+      )}
+
+      {factura && recienEmitida && (
+        <p className="mensaje-exito no-imprimir" role="status">
+          Factura {factura.numero} emitida. Ya puedes imprimirla.
+        </p>
+      )}
+
+      {factura && faltanDatosEmisor && (
+        <p className="mensaje-aviso no-imprimir">
+          <strong>Faltan tus datos de emisor.</strong> Sin tu nombre, NIF y dirección la factura no
+          es válida. Escríbelos en el archivo <code>backend/.env.local</code> y vuelve a arrancar
+          Facturín (el apartado «Tus datos de emisor» del README explica cómo).
+        </p>
+      )}
 
       {factura && (
         <article className="factura">
@@ -62,42 +105,71 @@ function FacturaDetalle() {
               <p className="texto-suave">Fecha: {formatearFecha(factura.fecha)}</p>
             </div>
 
-            <div className="factura__cliente">
-              <h2 className="subtitulo">Cliente</h2>
-              <p>
-                <strong>{factura.cliente.nombre}</strong>
-              </p>
-              {factura.cliente.dni && <p>DNI: {factura.cliente.dni}</p>}
-              {factura.cliente.direccion && <p>{factura.cliente.direccion}</p>}
-              {factura.cliente.email && <p>{factura.cliente.email}</p>}
+            {/* Quién emite la factura (tú) y a quién va dirigida */}
+            <div className="factura__partes">
+              {/* Si no hay ni un dato, el bloque no sale: mejor nada que un título vacío.
+                  El aviso de arriba ya explica que faltan */}
+              {empresa && (empresa.nombre || empresa.nif || empresa.direccion) && (
+                <div className="factura__parte">
+                  <h2 className="subtitulo">Emisor</h2>
+                  {faltanDatosEmisor && (
+                    <p className="factura__falta no-imprimir">Faltan tus datos</p>
+                  )}
+                  {empresa.nombre && (
+                    <p>
+                      <strong>{empresa.nombre}</strong>
+                    </p>
+                  )}
+                  {empresa.nif && <p>NIF: {empresa.nif}</p>}
+                  {empresa.direccion && <p>{empresa.direccion}</p>}
+                  {empresa.email && <p>{empresa.email}</p>}
+                </div>
+              )}
+
+              <div className="factura__parte">
+                <h2 className="subtitulo">Cliente</h2>
+                <p>
+                  <strong>{factura.cliente.nombre}</strong>
+                </p>
+                {factura.cliente.dni && <p>NIF: {factura.cliente.dni}</p>}
+                {factura.cliente.direccion && <p>{factura.cliente.direccion}</p>}
+                {factura.cliente.email && <p>{factura.cliente.email}</p>}
+              </div>
             </div>
           </header>
 
-          <table className="tabla">
-            <thead>
-              <tr>
-                <th>Producto</th>
-                <th className="numero">Cantidad</th>
-                <th className="numero">Precio</th>
-                <th className="numero">IVA</th>
-                <th className="numero">Importe</th>
-              </tr>
-            </thead>
-            <tbody>
-              {factura.lineas.map((linea) => (
-                <tr key={linea.id}>
-                  <td>{linea.descripcion}</td>
-                  <td className="numero">{linea.cantidad}</td>
-                  <td className="numero">{centimosAEuros(linea.precio_centimos)}</td>
-                  <td className="numero">{linea.iva_porcentaje} %</td>
-                  <td className="numero">{centimosAEuros(linea.importe_centimos)}</td>
+          {/* "tabla-scroll": en el móvil la tabla se desliza de lado sin mover la página */}
+          <div className="tabla-scroll">
+            <table className="tabla">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th className="numero">Cantidad</th>
+                  <th className="numero">Precio</th>
+                  <th className="numero">IVA</th>
+                  <th className="numero">Importe</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {factura.lineas.map((linea) => (
+                  <tr key={linea.id}>
+                    <td>{linea.descripcion}</td>
+                    <td className="numero">{linea.cantidad}</td>
+                    <td className="numero">{centimosAEuros(linea.precio_centimos)}</td>
+                    <td className="numero">{linea.iva_porcentaje} %</td>
+                    <td className="numero">{centimosAEuros(linea.importe_centimos)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-          {/* Base e IVA de cada tipo, y al final los totales. Todo viene calculado del backend */}
+          {/* En el orden en que se leen: base, IVA de cada tipo y total. Todo viene calculado del backend */}
           <dl className="vista-previa factura__totales">
+            <div className="factura__fila-total">
+              <dt>Base imponible</dt>
+              <dd>{centimosAEuros(factura.base_centimos)}</dd>
+            </div>
             {factura.iva_por_tipo.map((tipo) => (
               <div className="factura__fila-total" key={tipo.iva_porcentaje}>
                 <dt>
@@ -106,23 +178,22 @@ function FacturaDetalle() {
                 <dd>{centimosAEuros(tipo.iva_centimos)}</dd>
               </div>
             ))}
+            {/* Con un solo tipo de IVA, la suma sería la misma línea repetida */}
+            {factura.iva_por_tipo.length > 1 && (
+              <div className="factura__fila-total">
+                <dt>Total IVA</dt>
+                <dd>{centimosAEuros(factura.iva_centimos)}</dd>
+              </div>
+            )}
             <div className="factura__fila-total">
-              <dt>Base imponible</dt>
-              <dd>{centimosAEuros(factura.base_centimos)}</dd>
-            </div>
-            <div className="factura__fila-total">
-              <dt>Total IVA</dt>
-              <dd>{centimosAEuros(factura.iva_centimos)}</dd>
-            </div>
-            <div className="factura__fila-total">
-              <dt>Total</dt>
+              <dt className="vista-previa__total-etiqueta">Total</dt>
               <dd className="vista-previa__total">{centimosAEuros(factura.total_centimos)}</dd>
             </div>
           </dl>
 
           {/* Solo informativo: no sale al imprimir */}
           <section className="factura__divisas no-imprimir">
-            <h2 className="subtitulo">Total en otras divisas</h2>
+            <h2 className="etiqueta">Total en otras divisas</h2>
             {!divisas && !errorDivisas && <p className="texto-suave">Cargando tipos de cambio...</p>}
             {errorDivisas && (
               <p className="texto-suave">
