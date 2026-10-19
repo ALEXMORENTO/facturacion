@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { crearFactura, listarClientes, listarFacturas, listarProductos } from '../api.js'
+import SinDato from '../components/SinDato.jsx'
 import { centimosAEuros } from '../utils/dinero.js'
 import { formatearFecha } from '../utils/fechas.js'
 
@@ -85,6 +86,18 @@ function Facturas() {
       .catch((err) => setError(err.message))
       .finally(() => setCargando(false))
   }, [])
+
+  // Si venimos del botón "Nueva factura" de Inicio, abrimos el formulario en cuanto
+  // estén cargados los clientes y productos. Después borramos el aviso de la dirección
+  // para que, al recargar la página, no se vuelva a abrir solo
+  const location = useLocation()
+  const pidioNuevaFactura = location.state?.nuevaFactura === true
+
+  useEffect(() => {
+    if (cargando || !pidioNuevaFactura) return
+    abrirFormulario()
+    navigate(location.pathname, { replace: true, state: null })
+  }, [cargando, pidioNuevaFactura, navigate, location.pathname])
 
   // Muestra el error debajo del campo y lleva el cursor a él
   function marcarError(campo, mensaje) {
@@ -353,41 +366,44 @@ function Facturas() {
         ) : facturas.length === 0 ? (
           <p className="texto-suave">Todavía no hay facturas</p>
         ) : (
-          // El backend ya las devuelve ordenadas por fecha, de la más reciente a la más antigua
-          <table className="tabla">
-            <thead>
-              <tr>
-                <th>Nº</th>
-                <th>Fecha</th>
-                <th>Cliente</th>
-                <th>DNI</th>
-                <th className="numero">IVA</th>
-                <th className="numero">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {facturas.map((factura) => (
-                // Con el ratón, toda la fila lleva al detalle. Con el teclado se llega
-                // por el enlace del número (tabulador + Intro)
-                <tr
-                  key={factura.id}
-                  className="fila-enlace"
-                  onClick={() => navigate(`/facturas/${factura.id}`)}
-                >
-                  <td>
-                    <Link className="tabla__numero-factura" to={`/facturas/${factura.id}`}>
-                      {factura.numero}
-                    </Link>
-                  </td>
-                  <td>{formatearFecha(factura.fecha)}</td>
-                  <td>{factura.cliente_nombre}</td>
-                  <td>{factura.cliente_dni ?? '—'}</td>
-                  <td className="numero">{centimosAEuros(factura.iva_centimos)}</td>
-                  <td className="numero tabla__total">{centimosAEuros(factura.total_centimos)}</td>
+          // El backend ya las devuelve ordenadas por fecha, de la más reciente a la más antigua.
+          // "tabla-scroll": en el móvil la tabla se desliza de lado sin mover la página
+          <div className="tabla-scroll">
+            <table className="tabla">
+              <thead>
+                <tr>
+                  <th>Nº</th>
+                  <th>Fecha</th>
+                  <th>Cliente</th>
+                  <th>DNI</th>
+                  <th className="numero">IVA</th>
+                  <th className="numero">Total</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {facturas.map((factura) => (
+                  // Con el ratón, toda la fila lleva al detalle. Con el teclado se llega
+                  // por el enlace del número (tabulador + Intro)
+                  <tr
+                    key={factura.id}
+                    className="fila-enlace"
+                    onClick={() => navigate(`/facturas/${factura.id}`)}
+                  >
+                    <td>
+                      <Link className="tabla__numero-factura" to={`/facturas/${factura.id}`}>
+                        {factura.numero}
+                      </Link>
+                    </td>
+                    <td>{formatearFecha(factura.fecha)}</td>
+                    <td>{factura.cliente_nombre}</td>
+                    <td>{factura.cliente_dni ?? <SinDato />}</td>
+                    <td className="numero">{centimosAEuros(factura.iva_centimos)}</td>
+                    <td className="numero tabla__total">{centimosAEuros(factura.total_centimos)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ))}
     </>
   )

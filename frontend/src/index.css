@@ -4,9 +4,9 @@
 :root {
   /* Colores */
   --color-fondo: #eceeea; /* papel: fondo general */
-  --color-superficie: #f7f8f5; /* tarjetas, tablas, formularios y menú */
+  --color-superficie: #fbfcfa; /* tarjetas, tablas, formularios y menú */
   --color-campo: #fff; /* fondo de las cajas de texto y desplegables */
-  --color-borde: #cdd2cc; /* líneas de separación (decorativas) */
+  --color-borde: #bcc2bb; /* líneas de separación: marcan dónde empieza cada tarjeta */
   --color-borde-campo: #7d8892; /* borde de las cajas de texto: se tiene que ver bien */
   --color-texto: #15202a; /* tinta: texto principal */
   --color-texto-suave: #3b4852; /* gris: textos secundarios y etiquetas */
@@ -14,7 +14,7 @@
   --color-acento-hover: #d49a33; /* dorado más claro al pasar el ratón */
   --color-acento-texto: #7e5510; /* dorado oscuro: el claro no se lee sobre papel */
   --color-acento-suave: rgba(196, 138, 34, 0.12); /* fondo dorado muy tenue */
-  --color-acento-borde: rgba(196, 138, 34, 0.7); /* borde de los botones secundarios */
+  --color-acento-borde: #9a6a17; /* borde de los botones secundarios: oscuro para que se vea bien */
   --color-texto-sobre-acento: #15202a; /* texto dentro de un botón dorado */
   --color-error: #b4442e; /* rojo "atasco" de la marca */
   --color-error-suave: rgba(180, 68, 46, 0.08);
@@ -119,9 +119,9 @@ a {
   display: block;
   margin-top: 6px;
   font-family: var(--fuente-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 400;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-texto-suave);
 }
@@ -141,10 +141,8 @@ a {
   border-left: 2px solid transparent;
   border-radius: var(--radio);
   color: var(--color-texto-suave);
-  font-family: var(--fuente-mono);
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 15px;
+  font-weight: 500;
   text-decoration: none;
   transition: background-color 0.15s, color 0.15s, border-color 0.15s;
 }
@@ -186,16 +184,6 @@ a {
   max-width: 1000px;
 }
 
-/* Texto pequeño dorado encima del título, como en la web */
-.inicio__antetitulo {
-  margin: 0 0 14px;
-  font-family: var(--fuente-mono);
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-acento-texto);
-}
-
 .inicio__titulo {
   font-size: clamp(44px, 6vw, 76px);
   line-height: 0.92;
@@ -212,8 +200,26 @@ a {
   font-size: 17px;
 }
 
+/* Últimas facturas en la página de inicio */
+.inicio__ultimas {
+  margin-top: 40px;
+}
+
+.inicio__ultimas-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+}
+
+.inicio__ultimas-cabecera .subtitulo {
+  margin: 0;
+}
+
 .inicio__imagen {
-  margin: 12px 0 0;
+  margin: 40px 0 0;
   border: 1px solid var(--color-borde);
 }
 
@@ -249,6 +255,8 @@ a {
 .mensaje-aviso {
   margin: 0 0 16px;
   padding: 12px 16px;
+  border: 1px solid var(--color-error);
+  border-left-width: 4px;
   border-radius: var(--radio);
   background: var(--color-error-suave);
   color: var(--color-texto);
@@ -261,11 +269,8 @@ a {
 /* Etiqueta pequeña para títulos de apoyo, que no deben competir con el contenido */
 .etiqueta {
   margin: 0 0 6px;
-  font-family: var(--fuente-mono);
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--color-texto-suave);
 }
 
@@ -295,16 +300,13 @@ a {
   border-radius: var(--radio);
 }
 
-/* Etiquetas de los campos: pequeñas, en mayúsculas y con letra de máquina */
+/* Etiquetas de los campos: pequeñas y en negrita, pero en minúsculas para que se lean bien */
 .campo {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-family: var(--fuente-mono);
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 600;
   line-height: 16px; /* fijo: el botón Quitar cuenta con esta altura */
   color: var(--color-texto-suave);
 }
@@ -316,8 +318,7 @@ a {
   line-height: 20px; /* misma altura para cajas de texto y desplegables */
   font-family: var(--fuente-texto);
   font-size: 15px;
-  letter-spacing: normal;
-  text-transform: none;
+  font-weight: 400;
   color: var(--color-texto);
   background: var(--color-campo);
   border: 1px solid var(--color-borde-campo);
@@ -379,12 +380,14 @@ a {
 }
 
 .tabla th {
-  font-family: var(--fuente-mono);
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--color-texto-suave);
+}
+
+/* Caja que deja deslizar la tabla de lado si no cabe (en el móvil), sin mover la página entera */
+.tabla-scroll {
+  overflow-x: auto;
 }
 
 /* El total de cada factura en el listado, algo más marcado que el resto */
@@ -421,10 +424,7 @@ a {
 
 /* Error de un campo concreto, justo debajo de él */
 .campo__error {
-  font-family: var(--fuente-texto);
-  font-size: 13px;
-  letter-spacing: normal;
-  text-transform: none;
+  font-weight: 400;
   color: var(--color-error);
 }
 
@@ -637,6 +637,104 @@ a.boton {
 
 .factura__divisas-fecha {
   font-size: 13px;
+}
+
+/* ===== Pantallas estrechas (móvil, tableta o el navegador con mucho zoom) ===== */
+@media (max-width: 860px) {
+  /* El menú deja de ir a la izquierda y pasa a ser una barra arriba */
+  .menu-lateral {
+    position: static;
+    width: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 24px;
+    padding: 12px 16px;
+    border-right: none;
+    border-bottom: 1px solid var(--color-borde);
+  }
+
+  .menu-lateral__marca {
+    padding: 0;
+    font-size: 24px;
+  }
+
+  .menu-lateral__logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .menu-lateral__submarca {
+    margin-top: 2px;
+  }
+
+  /* Los enlaces, en fila. Si no caben, se deslizan de lado dentro de la barra */
+  .menu-lateral nav {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .menu-lateral__lista {
+    flex-direction: row;
+  }
+
+  .menu-lateral__enlace {
+    border-left: none;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+
+  .menu-lateral__enlace.active {
+    border-bottom-color: var(--color-acento);
+  }
+
+  .contenido {
+    margin-left: 0;
+    padding: 24px 16px;
+    min-height: 0;
+  }
+
+  .titulo-pagina {
+    font-size: 34px;
+    margin-bottom: 20px;
+  }
+
+  /* Cada campo ocupa todo el ancho, uno debajo de otro */
+  .formulario {
+    padding: 16px;
+  }
+
+  .formulario .campo {
+    flex: 1 1 100%;
+  }
+
+  .campo input,
+  .campo select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* Menos la cantidad, que es corta y comparte fila con el botón Quitar */
+  .formulario .campo:has(.campo__cantidad) {
+    flex: 0 0 auto;
+  }
+
+  /* Las cifras no se parten en dos renglones: mejor deslizar la tabla */
+  .tabla-scroll .tabla .numero {
+    white-space: nowrap;
+  }
+
+  .factura {
+    padding: 20px 16px;
+  }
+
+  .factura__parte {
+    min-width: 0;
+  }
+
+  .vista-previa dt {
+    padding-right: 16px;
+  }
 }
 
 /* ===== Al imprimir ===== */

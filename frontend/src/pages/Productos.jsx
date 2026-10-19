@@ -108,24 +108,27 @@ function Productos() {
       ) : productos.length === 0 ? (
         <p className="texto-suave">Todavía no hay productos</p>
       ) : (
-        <table className="tabla">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th className="numero">Precio</th>
-              <th className="numero">IVA</th>
-            </tr>
-          </thead>
-          <tbody>
-            {productos.map((producto) => (
-              <tr key={producto.id}>
-                <td>{producto.nombre}</td>
-                <td className="numero">{centimosAEuros(producto.precio_centimos)}</td>
-                <td className="numero">{producto.iva_porcentaje} %</td>
+        // "tabla-scroll": en el móvil la tabla se desliza de lado sin mover la página
+        <div className="tabla-scroll">
+          <table className="tabla">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th className="numero">Precio</th>
+                <th className="numero">IVA</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {productos.map((producto) => (
+                <tr key={producto.id}>
+                  <td>{producto.nombre}</td>
+                  <td className="numero">{centimosAEuros(producto.precio_centimos)}</td>
+                  <td className="numero">{producto.iva_porcentaje} %</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </>
   )

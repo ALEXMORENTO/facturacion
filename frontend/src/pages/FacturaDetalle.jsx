@@ -92,7 +92,8 @@ function FacturaDetalle() {
       {factura && faltanDatosEmisor && (
         <p className="mensaje-aviso no-imprimir">
           <strong>Faltan tus datos de emisor.</strong> Sin tu nombre, NIF y dirección la factura no
-          es válida. Para añadirlos, sigue el apartado «Tus datos de emisor» del README.
+          es válida. Escríbelos en el archivo <code>backend/.env.local</code> y vuelve a arrancar
+          Facturín (el apartado «Tus datos de emisor» del README explica cómo).
         </p>
       )}
 
@@ -106,15 +107,10 @@ function FacturaDetalle() {
 
             {/* Quién emite la factura (tú) y a quién va dirigida */}
             <div className="factura__partes">
-              {empresa && (
-                // Si no hay ni un dato, el bloque no sale en papel: mejor nada que un título vacío
-                <div
-                  className={
-                    empresa.nombre || empresa.nif || empresa.direccion
-                      ? 'factura__parte'
-                      : 'factura__parte no-imprimir'
-                  }
-                >
+              {/* Si no hay ni un dato, el bloque no sale: mejor nada que un título vacío.
+                  El aviso de arriba ya explica que faltan */}
+              {empresa && (empresa.nombre || empresa.nif || empresa.direccion) && (
+                <div className="factura__parte">
                   <h2 className="subtitulo">Emisor</h2>
                   {faltanDatosEmisor && (
                     <p className="factura__falta no-imprimir">Faltan tus datos</p>
@@ -142,28 +138,31 @@ function FacturaDetalle() {
             </div>
           </header>
 
-          <table className="tabla">
-            <thead>
-              <tr>
-                <th>Producto</th>
-                <th className="numero">Cantidad</th>
-                <th className="numero">Precio</th>
-                <th className="numero">IVA</th>
-                <th className="numero">Importe</th>
-              </tr>
-            </thead>
-            <tbody>
-              {factura.lineas.map((linea) => (
-                <tr key={linea.id}>
-                  <td>{linea.descripcion}</td>
-                  <td className="numero">{linea.cantidad}</td>
-                  <td className="numero">{centimosAEuros(linea.precio_centimos)}</td>
-                  <td className="numero">{linea.iva_porcentaje} %</td>
-                  <td className="numero">{centimosAEuros(linea.importe_centimos)}</td>
+          {/* "tabla-scroll": en el móvil la tabla se desliza de lado sin mover la página */}
+          <div className="tabla-scroll">
+            <table className="tabla">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th className="numero">Cantidad</th>
+                  <th className="numero">Precio</th>
+                  <th className="numero">IVA</th>
+                  <th className="numero">Importe</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {factura.lineas.map((linea) => (
+                  <tr key={linea.id}>
+                    <td>{linea.descripcion}</td>
+                    <td className="numero">{linea.cantidad}</td>
+                    <td className="numero">{centimosAEuros(linea.precio_centimos)}</td>
+                    <td className="numero">{linea.iva_porcentaje} %</td>
+                    <td className="numero">{centimosAEuros(linea.importe_centimos)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {/* En el orden en que se leen: base, IVA de cada tipo y total. Todo viene calculado del backend */}
           <dl className="vista-previa factura__totales">
