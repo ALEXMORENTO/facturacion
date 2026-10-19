@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { crearCliente, listarClientes } from '../api.js'
+import SinDato from '../components/SinDato.jsx'
 
 // Valores del formulario cuando está vacío
 const FORMULARIO_VACIO = { nombre: '', dni: '', email: '', direccion: '' }
@@ -52,7 +53,11 @@ function Clientes() {
     <>
       <h1 className="titulo-pagina">Clientes</h1>
 
-      {error && <p className="mensaje-error">{error}</p>}
+      {error && (
+        <p className="mensaje-error" role="alert">
+          {error}
+        </p>
+      )}
 
       {/* noValidate: sin los avisos propios del navegador, para que el error del backend salga en rojo */}
       <form className="formulario" onSubmit={guardar} noValidate>
@@ -82,27 +87,30 @@ function Clientes() {
       ) : clientes.length === 0 ? (
         <p className="texto-suave">Todavía no hay clientes</p>
       ) : (
-        <table className="tabla">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>DNI</th>
-              <th>Email</th>
-              <th>Dirección</th>
-            </tr>
-          </thead>
-          <tbody>
-            {clientes.map((cliente) => (
-              // "key" ayuda a React a saber qué fila es cada una cuando la lista cambia
-              <tr key={cliente.id}>
-                <td>{cliente.nombre}</td>
-                <td>{cliente.dni ?? '—'}</td>
-                <td>{cliente.email ?? '—'}</td>
-                <td>{cliente.direccion ?? '—'}</td>
+        // "tabla-scroll": en el móvil la tabla se desliza de lado sin mover la página
+        <div className="tabla-scroll">
+          <table className="tabla">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>DNI</th>
+                <th>Email</th>
+                <th>Dirección</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {clientes.map((cliente) => (
+                // "key" ayuda a React a saber qué fila es cada una cuando la lista cambia
+                <tr key={cliente.id}>
+                  <td>{cliente.nombre}</td>
+                  <td>{cliente.dni ?? <SinDato />}</td>
+                  <td>{cliente.email ?? <SinDato />}</td>
+                  <td>{cliente.direccion ?? <SinDato />}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </>
   )

@@ -50,6 +50,19 @@ npm run instalar
 
 > Si usas `Facturin.bat` (ver abajo), no hace falta este paso: la primera vez instala solo lo que falte.
 
+### Tus datos de emisor
+
+Para que una factura sea válida tiene que llevar tus datos (quién la emite). Crea el archivo `backend/.env.local` con este contenido, cambiando los valores por los tuyos:
+
+```
+EMISOR_NOMBRE=Tu nombre o el de tu empresa
+EMISOR_NIF=12345678Z
+EMISOR_DIRECCION=Calle Ejemplo 1, 03001 Alicante
+EMISOR_EMAIL=tu@email.com
+```
+
+Este archivo no se sube a GitHub (son datos personales). Después de crearlo o cambiarlo, vuelve a arrancar Facturín. Si falta alguno de los tres primeros, el detalle de cada factura muestra un aviso.
+
 ## Cómo arrancarlo
 
 El programa son dos partes que funcionan a la vez: el backend (el servidor) y el frontend (las pantallas). Hay dos formas fáciles de encender las dos de golpe.

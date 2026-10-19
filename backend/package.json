@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --watch src/server.js"
+    "dev": "node --env-file-if-exists=.env.local --watch src/server.js"
   },
   "dependencies": {
     "express": "^5.2.1"
